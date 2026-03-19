@@ -73,12 +73,14 @@ export function WeatherSetupScreen() {
   ];
 
   const planOptions = [
-    { value: "", label: t("weather.selectPlan"), disabled: true },
-    { value: "plan-a", label: "Plan A" },
-    { value: "plan-b", label: "Plan B" },
-    { value: "plan-c", label: "Plan C" },
-    { value: "plan-d", label: "Plan D" },
-    { value: "plan-e", label: "Plan E" },
+    { value: "plan-1", label: 'Run 9-5/8" casing to 8,450 ft TD' },
+    { value: "plan-2", label: 'Drill 8-1/2" hole section to 12,200 ft' },
+    { value: "plan-3", label: "Circulate and condition mud — pre-log" },
+    { value: "plan-4", label: "Run wireline logs — density/neutron/resistivity" },
+    { value: "plan-5", label: "Perform pressure test on BOP stack" },
+    { value: "plan-6", label: "Trip out of hole for bit change" },
+    { value: "plan-7", label: 'Make up and run 5" drill pipe to bottom' },
+    { value: "plan-8", label: 'Cement 9-5/8" casing — two-stage job' },
   ];
 
   const addWeather = (weather: string) => {
@@ -115,8 +117,7 @@ export function WeatherSetupScreen() {
     }
   };
 
-  const handleGenerate = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGenerate = () => {
     setShowModal(true);
   };
 
@@ -254,11 +255,12 @@ export function WeatherSetupScreen() {
               />
 
               {/* Input Plan */}
-              <FormSelect
+              <SearchableSelect
                 label={t("weather.inputPlan")}
                 value={inputPlan}
-                onChange={(e) => setInputPlan(e.target.value)}
+                onChange={setInputPlan}
                 options={planOptions}
+                placeholder={t("weather.selectPlan")}
               />
             </div>
           </div>
