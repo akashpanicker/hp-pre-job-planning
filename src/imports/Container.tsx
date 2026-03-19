@@ -31,7 +31,7 @@ function Container3() {
     <div className="h-[24px] relative shrink-0" data-name="Container">
       <div className="bg-clip-padding border-0 border-[transparent] border-solid content-stretch flex gap-[8px] h-full items-center relative">
         <Icon />
-        <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[24px] not-italic relative shrink-0 text-[#e7ecf5] text-[16px] tracking-[1px] uppercase whitespace-nowrap">Current Weather Conditions</p>
+        <p className="font-['Inter:Semi_Bold',sans-serif] font-semibold leading-[24px] not-italic relative shrink-0 text-[#e7ecf5] text-[16px] tracking-[1px] uppercase whitespace-nowrap">Rig Weather Conditions</p>
       </div>
     </div>
   );

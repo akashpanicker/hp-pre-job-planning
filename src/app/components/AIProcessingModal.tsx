@@ -23,7 +23,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
   useEffect(() => {
     const messageDuration = 750; // Reduced from 1500ms to 750ms per message
     const totalDuration = messageDuration * statusMessages.length;
-    
+
     // Progress bar animation
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
@@ -66,12 +66,12 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
     >
       <div
         style={{
-          backgroundColor: "#182235",
-          border: "1px solid #1F2B42",
+          backgroundColor: "var(--bg-card)",
+          border: "var(--border-default)",
           borderRadius: 12,
           padding: "40px 48px",
           width: 440,
-          boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+          boxShadow: "var(--shadow-modal)",
         }}
       >
         {/* Spinner */}
@@ -81,8 +81,8 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
             style={{
               width: 48,
               height: 48,
-              border: "3px solid #1F2B42",
-              borderTop: "3px solid #2B5597",
+              border: "3px solid var(--bg-hover)",
+              borderTop: "3px solid var(--color-brand)",
             }}
           />
         </div>
@@ -92,7 +92,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
         {/* Title */}
         <h2
           style={{
-            color: "#E7ECF5",
+            color: "var(--text-primary)",
             fontSize: 16,
             fontWeight: 700,
             textAlign: "center",
@@ -106,7 +106,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
         {/* Subtitle */}
         <p
           style={{
-            color: "#8A9AB6",
+            color: "var(--text-tertiary)",
             fontSize: 14,
             fontWeight: 400,
             textAlign: "center",
@@ -124,7 +124,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
         {/* Status message */}
         <div
           style={{
-            color: "#6F8FD9",
+            color: "var(--color-info)",
             fontSize: 14,
             fontWeight: 500,
             textAlign: "center",
@@ -142,7 +142,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
         <div
           style={{
             height: 6,
-            backgroundColor: "#0E141F",
+            backgroundColor: "var(--bg-page)",
             borderRadius: 4,
             overflow: "hidden",
             position: "relative",
@@ -152,7 +152,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
             style={{
               height: "100%",
               width: `${progress}%`,
-              backgroundColor: "#2B5597",
+              backgroundColor: "var(--color-brand)",
               borderRadius: 4,
               transition: "width 0.05s linear",
               position: "relative",
@@ -176,7 +176,7 @@ export function AIProcessingModal({ onComplete }: AIProcessingModalProps) {
         {/* Progress percentage */}
         <div
           style={{
-            color: "#5F6F8A",
+            color: "var(--text-muted)",
             fontSize: 14,
             fontWeight: 400,
             textAlign: "right",

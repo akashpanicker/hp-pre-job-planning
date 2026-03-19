@@ -61,9 +61,9 @@ export function SafetyVideos() {
   // Check if a video has been watched
   const getStatusLabel = (role: Role) => {
     if (watchedVideos.has(role)) {
-      return { text: t("videos.watched"), color: "#4CAF50" };
+      return { text: t("videos.watched"), color: "var(--color-positive)" };
     }
-    return { text: t("videos.notWatched"), color: "#5F6F8A" };
+    return { text: t("videos.notWatched"), color: "var(--text-not-reviewed)" };
   };
 
   // Check if all videos have been watched
@@ -74,7 +74,7 @@ export function SafetyVideos() {
   return (
     <div
       className="flex flex-col h-screen w-screen"
-      style={{ backgroundColor: "#0E141F", fontFamily: "Inter, sans-serif" }}
+      style={{ backgroundColor: "var(--bg-page)", fontFamily: "Inter, sans-serif" }}
     >
       {/* Header */}
       <Header breadcrumb={t("header.safetyBriefingDashboard")} />
@@ -83,8 +83,8 @@ export function SafetyVideos() {
       <div
         className="flex items-center gap-2 px-6 shrink-0 flex-wrap"
         style={{
-          backgroundColor: "#121A28",
-          borderBottom: "1px solid #1F2B42",
+          backgroundColor: "var(--bg-context-bar)",
+          borderBottom: "var(--border-default)",
           padding: "10px 24px",
           minHeight: 42,
         }}
@@ -98,7 +98,7 @@ export function SafetyVideos() {
             border: "1px solid rgba(255,218,138,0.2)",
             borderRadius: 4,
             padding: "3px 10px",
-            color: "#FFDA8A",
+            color: "var(--text-warning)",
             fontSize: 12,
             fontWeight: 600,
           }}
@@ -113,7 +113,7 @@ export function SafetyVideos() {
             border: "1px solid rgba(255,218,138,0.2)",
             borderRadius: 4,
             padding: "3px 10px",
-            color: "#FFDA8A",
+            color: "var(--text-warning)",
             fontSize: 12,
             fontWeight: 600,
           }}
@@ -130,20 +130,20 @@ export function SafetyVideos() {
         <div
           style={{
             width: 200,
-            backgroundColor: "#121A28",
-            borderRight: "1px solid #1F2B42",
+            backgroundColor: "var(--bg-sidebar)",
+            borderRight: "var(--border-sidebar)",
           }}
         >
           {/* Panel header */}
           <div
             style={{
               padding: "12px 16px",
-              borderBottom: "1px solid #1F2B42",
+              borderBottom: "var(--border-default)",
             }}
           >
             <span
               style={{
-                color: "#8A9AB6",
+                color: "var(--text-tertiary)",
                 fontSize: 14,
                 fontWeight: 600,
                 letterSpacing: "1px",
@@ -167,8 +167,8 @@ export function SafetyVideos() {
                   style={{
                     height: 48,
                     padding: "0 16px",
-                    borderLeft: `3px solid ${isActive ? "#2B5597" : "transparent"}`,
-                    backgroundColor: isActive ? "#1F2B42" : "transparent",
+                    borderLeft: `3px solid ${isActive ? "var(--color-brand)" : "transparent"}`,
+                    backgroundColor: isActive ? "var(--bg-active)" : "transparent",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
@@ -178,7 +178,7 @@ export function SafetyVideos() {
                     transition: "background-color 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.backgroundColor = "#182235";
+                    if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-card)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
@@ -186,7 +186,7 @@ export function SafetyVideos() {
                 >
                   <span
                     style={{
-                      color: isActive ? "#E7ECF5" : "#8A9AB6",
+                      color: isActive ? "var(--text-role-active)" : "var(--text-role-inactive)",
                       fontSize: 14,
                       fontWeight: isActive ? 600 : 400,
                       textTransform: "uppercase",
@@ -217,7 +217,7 @@ export function SafetyVideos() {
             {/* Safety Videos panel */}
             <div
               style={{
-                backgroundColor: "#182235",
+                backgroundColor: "var(--bg-card)",
                 borderRadius: 8,
                 overflow: "hidden",
                 flex: 1,
@@ -232,10 +232,10 @@ export function SafetyVideos() {
                 style={{ padding: "12px 16px", flexShrink: 0 }}
               >
                 <div className="flex items-center gap-2">
-                  <Play size={14} style={{ color: "#6F8FD9" }} />
+                  <Play size={14} style={{ color: "var(--color-info)" }} />
                   <span
                     style={{
-                      color: "#FFFFFF",
+                      color: "var(--text-primary)",
                       fontSize: 16,
                       fontWeight: 600,
                       letterSpacing: "1px",
@@ -251,10 +251,10 @@ export function SafetyVideos() {
                   style={{
                     width: 30,
                     height: 30,
-                    backgroundColor: "#1F2B42",
-                    border: "1px solid #253552",
+                    backgroundColor: "var(--bg-button-secondary)",
+                    border: "var(--border-chip)",
                     borderRadius: 6,
-                    color: "#B6C2D9",
+                    color: "var(--text-secondary)",
                   }}
                 >
                   <List size={13} />
@@ -283,7 +283,7 @@ export function SafetyVideos() {
                     flex: 1,
                     minHeight: 0,
                     position: "relative",
-                    backgroundColor: "var(--color-surface-1)",
+                    backgroundColor: "var(--bg-page)",
                     border: "var(--border-default)",
                     borderRadius: "var(--border-radius-lg)",
                     overflow: "hidden",
@@ -355,9 +355,9 @@ function Chip({ text }: { text: string }) {
   return (
     <span
       style={{
-        backgroundColor: "#1F2B42",
-        border: "1px solid #253552",
-        color: "#B6C2D9",
+        backgroundColor: "var(--bg-chip)",
+        border: "var(--border-chip)",
+        color: "var(--text-secondary)",
         fontSize: 12,
         fontWeight: 600,
         borderRadius: 4,

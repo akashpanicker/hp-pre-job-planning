@@ -74,11 +74,11 @@
 }
 
 [data-theme="light"] {
-  --color-surface-1: #F0F4FA;
+  --color-surface-1: #F5F7FA;
   --color-surface-2: #FFFFFF;
-  --color-surface-3: #E4EAF4;
-  --color-surface-4: #D0DAF0;
-  --color-surface-5: #B8C8E8;
+  --color-surface-3: #FFFFFF;
+  --color-surface-4: #E8ECF4;
+  --color-surface-5: #D0D8E8;
 
   --color-brand: #2B5597;
   --color-brand-hover: #1A3D7A;
@@ -93,10 +93,10 @@
   --color-error: #C0102E;
   --color-info: #1A4A9A;
 
-  --border-default: 1px solid #C8D4E8;
+  --border-default: 1px solid #D0D8E8;
   --border-active: 1px solid #2B5597;
 
-  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.15);
+  --shadow-dropdown: 0 4px 12px rgba(0,0,0,0.12);
 }
 
 @theme inline {

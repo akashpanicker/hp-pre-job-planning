@@ -16,7 +16,7 @@ export function StickyFooter({ children, justify = "end" }: StickyFooterProps) {
         position: "sticky",
         bottom: 0,
         padding: "16px 24px",
-        backgroundColor: "var(--color-surface-1)",
+        backgroundColor: "var(--bg-bottom-bar)",
         borderTop: "var(--border-default)",
         zIndex: 10,
       }}
@@ -44,7 +44,7 @@ interface FooterButtonProps {
 }
 
 const SECONDARY: React.CSSProperties = {
-  backgroundColor: "var(--color-surface-5)",
+  backgroundColor: "var(--border-default)",
   border: "none",
   borderRadius: 6,
   padding: "8px 17px",
@@ -76,7 +76,7 @@ export function FooterButton({
   
   // Disabled styles
   const disabledStyle: React.CSSProperties = {
-    backgroundColor: "var(--color-surface-4)",
+    backgroundColor: "var(--bg-hover)",
     border: "none",
     borderRadius: 6,
     padding: "8px 16px",
@@ -89,8 +89,8 @@ export function FooterButton({
   };
   
   const baseStyle = disabled ? disabledStyle : (isPrimary ? PRIMARY : SECONDARY);
-  const hoverBg = isPrimary ? "var(--color-brand-hover)" : "var(--color-surface-4)";
-  const restBg = isPrimary ? "var(--color-brand)" : "var(--color-surface-5)";
+  const hoverBg = isPrimary ? "var(--color-brand-hover)" : "var(--bg-hover)";
+  const restBg = isPrimary ? "var(--color-brand)" : "var(--bg-button-secondary)";
 
   return (
     <button

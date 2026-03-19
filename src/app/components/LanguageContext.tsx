@@ -30,7 +30,7 @@ const translations: Record<string, Record<Language, string>> = {
 
   // Weather Setup
   "weather.title": { en: "Morning Site Conditions", es: "Condiciones Matutinas del Sitio" },
-  "weather.sectionTitle": { en: "Current Weather Conditions", es: "Condiciones Climáticas Actuales" },
+  "weather.sectionTitle": { en: "Rig Weather Conditions", es: "Climáticas Actuales" },
   "weather.autoDetect": { en: "Auto-detect from GPS", es: "Auto-detectar por GPS" },
   "weather.rig": { en: "Rig", es: "Equipo de Perforación" },
   "weather.selectRig": { en: "Select a rig...", es: "Seleccione un equipo..." },
@@ -171,7 +171,7 @@ const translations: Record<string, Record<Language, string>> = {
 
 const LanguageContext = createContext<LanguageContextType>({
   language: "en",
-  setLanguage: () => {},
+  setLanguage: () => { },
   t: (key: string) => key,
 });
 

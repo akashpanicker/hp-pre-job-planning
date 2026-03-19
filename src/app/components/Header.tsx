@@ -3,6 +3,7 @@ import { Globe, Check, Video, LogOut } from "lucide-react";
 import { useLanguage } from "./LanguageContext";
 import { ThemeToggle } from "./ThemeToggle";
 import { useNavigate, useLocation } from "react-router";
+import { useTheme } from "./ThemeContext";
 import svgPaths from "../../imports/svg-ioq6ca64fj";
 
 interface HeaderProps {
@@ -28,6 +29,7 @@ export function Header({
   const [isHovered, setIsHovered] = useState(false);
   const [isBreadcrumbHovered, setIsBreadcrumbHovered] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
+  const { theme } = useTheme();
   const [isUserHovered, setIsUserHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
@@ -56,8 +58,8 @@ export function Header({
     <div
       className="flex items-start px-[16px] pr-[24px] relative shrink-0"
       style={{
-        backgroundColor: "var(--color-surface-3)",
-        borderBottom: "1px solid var(--color-text-muted)",
+        backgroundColor: "var(--bg-header)",
+        borderBottom: "var(--border-default)",
         height: 52,
       }}
     >
@@ -67,13 +69,17 @@ export function Header({
         <div className="flex flex-col h-full items-center justify-center relative shrink-0 p-[6px]">
           <div className="h-[46px] overflow-clip relative shrink-0 w-[66px]">
             <div className="absolute inset-[4.82%_3.33%_4.82%_3.39%]">
-              <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 61.5636 41.5628">
-                <g>
-                  <path d={svgPaths.p2d66ee00} fill="white" />
-                  <path clipRule="evenodd" d={svgPaths.p2a422c00} fill="white" fillRule="evenodd" />
-                  <path clipRule="evenodd" d={svgPaths.p2c449600} fill="white" fillRule="evenodd" />
-                </g>
-              </svg>
+              {theme === "light" ? (
+                <img src="/assets/HP logo (light mode).svg" alt="HP Logo" className="absolute block size-full" style={{ objectFit: 'contain' }} />
+              ) : (
+                <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 61.5636 41.5628">
+                  <g>
+                    <path d={svgPaths.p2d66ee00} fill="white" />
+                    <path clipRule="evenodd" d={svgPaths.p2a422c00} fill="white" fillRule="evenodd" />
+                    <path clipRule="evenodd" d={svgPaths.p2c449600} fill="white" fillRule="evenodd" />
+                  </g>
+                </svg>
+              )}
             </div>
           </div>
         </div>
@@ -81,7 +87,10 @@ export function Header({
         {/* Title & Breadcrumb */}
         <div className="flex flex-col h-full items-start justify-center pb-[4px] relative shrink-0">
           <div className="flex gap-[8px] items-center mb-[-4px] relative shrink-0">
-            <div className="flex flex-col font-['Inter',sans-serif] font-semibold justify-end leading-[0] not-italic relative shrink-0 text-[18px] text-white whitespace-nowrap">
+            <div 
+              className="flex flex-col font-['Inter',sans-serif] font-semibold justify-end leading-[0] not-italic relative shrink-0 text-[18px] whitespace-nowrap"
+              style={{ color: "var(--text-primary)" }}
+            >
               <p className="leading-[1.5] text-[16px]">{t("header.preJobPlanning")}</p>
             </div>
           </div>
@@ -140,7 +149,7 @@ export function Header({
           <div className="flex items-start relative shrink-0">
             <div
               className="flex gap-[8px] h-[24px] items-center pl-[12px] pr-[8px] relative rounded-[30px] shrink-0"
-              style={{ backgroundColor: "#173D2F" }}
+              style={{ backgroundColor: "var(--bg-online-badge)" }}
             >
               <div className="relative shrink-0 size-[8px]">
                 <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8 8">
@@ -149,7 +158,7 @@ export function Header({
               </div>
               <div
                 className="flex flex-col font-['Inter',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-center tracking-[0.15px] whitespace-nowrap"
-                style={{ color: "#2FBF71" }}
+                style={{ color: "var(--text-online)" }}
               >
                 <p className="leading-none">{t("header.online")}</p>
               </div>
@@ -171,7 +180,7 @@ export function Header({
                 width: 32,
                 height: 32,
                 borderRadius: "var(--border-radius-md)",
-                backgroundColor: isVideoHovered ? "var(--color-surface-4)" : "transparent",
+                backgroundColor: isVideoHovered ? "var(--bg-hover)" : "transparent",
                 border: "none",
                 padding: 0,
               }}
@@ -200,7 +209,7 @@ export function Header({
                 width: 32,
                 height: 32,
                 borderRadius: "var(--border-radius-md)",
-                backgroundColor: isHovered || showLangDropdown ? "var(--color-surface-4)" : "transparent",
+                backgroundColor: isHovered || showLangDropdown ? "var(--bg-hover)" : "transparent",
                 border: "none",
                 padding: 0,
                 position: "relative",
@@ -239,7 +248,7 @@ export function Header({
                   right: 0,
                   marginTop: 6,
                   width: 160,
-                  backgroundColor: "var(--color-surface-2)",
+                  backgroundColor: "var(--bg-card)",
                   border: "var(--border-default)",
                   borderRadius: "var(--border-radius-lg)",
                   boxShadow: "var(--shadow-dropdown)",
@@ -285,14 +294,14 @@ export function Header({
                         alignItems: "center",
                         gap: 8,
                         padding: "10px 12px",
-                        backgroundColor: isActive ? "var(--color-surface-4)" : "transparent",
+                        backgroundColor: isActive ? "var(--bg-active)" : "transparent",
                         border: "none",
                         borderLeft: isActive ? "3px solid var(--color-brand)" : "3px solid transparent",
                         textAlign: "left",
                         fontFamily: "Inter, sans-serif",
                       }}
                       onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.backgroundColor = "var(--color-surface-4)";
+                        if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
@@ -300,7 +309,7 @@ export function Header({
                     >
                       <span
                         style={{
-                          backgroundColor: "var(--color-surface-5)",
+                          backgroundColor: "var(--bg-hover)",
                           border: "var(--border-active)",
                           borderRadius: "var(--border-radius-sm)",
                           padding: "2px 6px",
@@ -340,7 +349,7 @@ export function Header({
               style={{
                 borderRadius: "var(--border-radius-md)",
                 padding: "4px 8px 4px 4px",
-                backgroundColor: isUserHovered || showUserDropdown ? "var(--color-surface-4)" : "transparent",
+                backgroundColor: isUserHovered || showUserDropdown ? "var(--bg-hover)" : "transparent",
                 transition: "background-color 0.2s",
               }}
               onClick={() => setShowUserDropdown(!showUserDropdown)}
@@ -352,7 +361,7 @@ export function Header({
                 <div className="relative shrink-0 size-[40px]">
                   <div
                     className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[30px] size-[40px]"
-                    style={{ backgroundColor: "var(--color-surface-5)" }}
+                    style={{ backgroundColor: "var(--bg-hover)" }}
                   />
                   <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[24px]">
                     <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
@@ -372,7 +381,7 @@ export function Header({
                 </div>
                 <div
                   className="flex flex-col font-['Inter',sans-serif] font-normal justify-end relative shrink-0 text-[12px]"
-                  style={{ color: "#8B98A8" }}
+                  style={{ color: "var(--text-tertiary)" }}
                 >
                   <p className="leading-none">{userRole}</p>
                 </div>
@@ -388,7 +397,7 @@ export function Header({
                   right: 0,
                   marginTop: 6,
                   width: 160,
-                  backgroundColor: "var(--color-surface-2)",
+                  backgroundColor: "var(--bg-card)",
                   border: "var(--border-default)",
                   borderRadius: "var(--border-radius-lg)",
                   boxShadow: "var(--shadow-dropdown)",
@@ -414,7 +423,7 @@ export function Header({
                     fontFamily: "Inter, sans-serif",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--color-surface-4)";
+                    e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";

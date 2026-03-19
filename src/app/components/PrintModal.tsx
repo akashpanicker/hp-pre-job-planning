@@ -319,7 +319,7 @@ function CompleteStage({
           width: "100%",
           height: 44,
           backgroundColor: "var(--color-brand)",
-          color: "var(--color-text-primary)",
+          color: "var(--text-on-primary)",
           fontWeight: 700,
           fontSize: 14,
           borderRadius: "var(--border-radius-md)",

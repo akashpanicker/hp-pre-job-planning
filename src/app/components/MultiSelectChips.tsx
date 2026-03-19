@@ -39,7 +39,7 @@ export function MultiSelectChips({
     <div className="flex flex-col gap-2">
       <label
         style={{
-          color: "#B6C2D9",
+          color: "var(--text-secondary)",
           fontSize: 14,
           fontWeight: 500,
           letterSpacing: "1px",
@@ -68,11 +68,11 @@ export function MultiSelectChips({
               }}
               className="flex items-center gap-2"
               style={{
-                backgroundColor: isSelected ? "#2B5597" : "#0E141F",
-                border: `1px solid ${isSelected ? "#2B5597" : "#253552"}`,
+                backgroundColor: isSelected ? "var(--color-brand)" : "var(--bg-input)",
+                border: `1px solid ${isSelected ? "var(--color-brand)" : "var(--raw-dark-surface-5)"}`,
                 borderRadius: 4,
                 padding: "6px 12px",
-                color: isSelected ? "#FFFFFF" : "#B6C2D9",
+                color: isSelected ? "var(--text-on-primary)" : "var(--text-secondary)",
                 fontSize: 12,
                 fontWeight: 500,
                 fontFamily: "Inter, sans-serif",
@@ -106,11 +106,11 @@ export function MultiSelectChips({
               type="button"
               className="flex items-center gap-2"
               style={{
-                backgroundColor: "#2B5597",
-                border: "1px solid #2B5597",
+                backgroundColor: "var(--color-brand)",
+                border: "1px solid var(--color-brand)",
                 borderRadius: 4,
                 padding: "6px 12px",
-                color: "#FFFFFF",
+                color: "var(--text-on-primary)",
                 fontSize: 12,
                 fontWeight: 500,
                 fontFamily: "Inter, sans-serif",
@@ -143,28 +143,28 @@ export function MultiSelectChips({
           style={{
             flex: 1,
             height: 32,
-            backgroundColor: "#0E141F",
-            border: "1px solid #253552",
+            backgroundColor: "var(--bg-input)",
+            border: "var(--border-chip)",
             borderRadius: 4,
             padding: "0 12px",
-            color: "#E7ECF5",
+            color: "var(--text-primary)",
             fontSize: 14,
             fontFamily: "Inter, sans-serif",
             outline: "none",
           }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "#2B5597")}
-          onBlur={(e) => (e.currentTarget.style.borderColor = "#253552")}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "var(--color-brand)")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "")}
         />
         <button
           type="button"
           onClick={handleAddCustom}
           disabled={!customInputValue.trim()}
           style={{
-            backgroundColor: customInputValue.trim() ? "#2B5597" : "#253552",
+            backgroundColor: customInputValue.trim() ? "var(--color-brand)" : "var(--bg-active)",
             border: "none",
             borderRadius: 4,
             padding: "6px 16px",
-            color: "#FFFFFF",
+            color: "var(--text-on-primary)",
             fontSize: 14,
             fontWeight: 600,
             fontFamily: "Inter, sans-serif",

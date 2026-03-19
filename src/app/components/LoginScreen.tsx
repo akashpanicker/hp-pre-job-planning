@@ -31,7 +31,7 @@ export function LoginScreen() {
   return (
     <div
       className="flex flex-col h-screen w-screen"
-      style={{ backgroundColor: "var(--color-surface-1)", fontFamily: "Inter, sans-serif" }}
+      style={{ backgroundColor: "var(--bg-page)", fontFamily: "Inter, sans-serif" }}
     >
       {/* Header */}
       <Header breadcrumb={t("header.login")} showOnlineStatus={false} showUser={false} />
@@ -63,7 +63,7 @@ export function LoginScreen() {
         className="flex items-center justify-between px-4 shrink-0"
         style={{
           height: 32,
-          backgroundColor: "var(--color-surface-3)",
+          backgroundColor: "var(--bg-bottom-bar)",
           borderTop: "var(--border-default)",
         }}
       >

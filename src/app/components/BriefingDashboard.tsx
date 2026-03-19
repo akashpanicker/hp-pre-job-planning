@@ -37,7 +37,7 @@ interface Section {
 const drillerSections: Section[] = [
   {
     label: "THINGS TO REMEMBER",
-    icon: <ClipboardCheck size={14} style={{ color: "#8A9AB6" }} />,
+    icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
       { text: "Confirm BOP test completed before spudding operations", checked: false },
       { text: "Verify weight indicator and deadline anchor are calibrated", checked: false },
@@ -51,7 +51,7 @@ const drillerSections: Section[] = [
 const floorman1Sections: Section[] = [
   {
     label: "THINGS TO REMEMBER",
-    icon: <ClipboardCheck size={14} style={{ color: "#8A9AB6" }} />,
+    icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
       { text: "Inspect all tongs and dies before making connections", checked: false },
       { text: "Confirm stabbing board is secured before running casing", checked: false },
@@ -66,7 +66,7 @@ const floorman1Sections: Section[] = [
 const floorman2Sections: Section[] = [
   {
     label: "THINGS TO REMEMBER",
-    icon: <ClipboardCheck size={14} style={{ color: "#8A9AB6" }} />,
+    icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
       { text: "Confirm iron roughneck is properly aligned before each connection", checked: false },
       { text: "Inspect spinning chain condition and replace if worn", checked: false },
@@ -81,7 +81,7 @@ const floorman2Sections: Section[] = [
 const pitHandSections: Section[] = [
   {
     label: "THINGS TO REMEMBER",
-    icon: <ClipboardCheck size={14} style={{ color: "#8A9AB6" }} />,
+    icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
       { text: "Check all pit levels and record baseline readings", checked: false },
       { text: "Monitor mud weight and viscosity every 30 minutes", checked: false },
@@ -96,7 +96,7 @@ const pitHandSections: Section[] = [
 const derrickmanSections: Section[] = [
   {
     label: "THINGS TO REMEMBER",
-    icon: <ClipboardCheck size={14} style={{ color: "#8A9AB6" }} />,
+    icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
       { text: "Inspect elevator links and bails before tripping operations", checked: false },
       { text: "Confirm monkey board safety latch is engaged", checked: false },
@@ -251,11 +251,11 @@ export function BriefingDashboard() {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case "reviewed":
-        return { text: t("briefing.reviewed"), color: "#4ED199" };
+        return { text: t("briefing.reviewed"), color: "var(--text-reviewed)" };
       case "not-reviewed":
-        return { text: t("briefing.notReviewed"), color: "#5F6F8A" };
+        return { text: t("briefing.notReviewed"), color: "var(--text-not-reviewed)" };
       default:
-        return { text: t("briefing.notReviewed"), color: "#5F6F8A" };
+        return { text: t("briefing.notReviewed"), color: "var(--text-not-reviewed)" };
     }
   };
 
@@ -324,7 +324,7 @@ export function BriefingDashboard() {
   return (
     <div
       className="flex flex-col h-screen w-screen"
-      style={{ backgroundColor: "var(--color-surface-1)", fontFamily: "Inter, sans-serif" }}
+      style={{ backgroundColor: "var(--bg-page)", fontFamily: "Inter, sans-serif" }}
     >
       {/* Header */}
       <Header breadcrumb={t("header.safetyBriefingDashboard")} />
@@ -333,7 +333,7 @@ export function BriefingDashboard() {
       <div
         className="flex items-center gap-2 px-6 shrink-0 flex-wrap"
         style={{
-          backgroundColor: "var(--color-surface-3)",
+          backgroundColor: "var(--bg-context-bar)",
           borderBottom: "var(--border-default)",
           padding: "10px 24px",
           minHeight: 42,
@@ -348,7 +348,7 @@ export function BriefingDashboard() {
             border: "1px solid rgba(255,218,138,0.2)",
             borderRadius: 4,
             padding: "3px 10px",
-            color: "#FFDA8A",
+            color: "var(--text-warning)",
             fontSize: 12,
             fontWeight: 600,
           }}
@@ -363,7 +363,7 @@ export function BriefingDashboard() {
             border: "1px solid rgba(255,218,138,0.2)",
             borderRadius: 4,
             padding: "3px 10px",
-            color: "#FFDA8A",
+            color: "var(--text-warning)",
             fontSize: 12,
             fontWeight: 600,
           }}
@@ -381,7 +381,7 @@ export function BriefingDashboard() {
         <div
           style={{
             width: 200,
-            backgroundColor: "var(--color-surface-3)",
+            backgroundColor: "var(--bg-sidebar)",
             borderRight: "var(--border-default)",
           }}
         >
@@ -394,7 +394,7 @@ export function BriefingDashboard() {
           >
             <span
               style={{
-                color: "#8A9AB6",
+                color: "var(--text-tertiary)",
                 fontSize: 14,
                 fontWeight: 600,
                 letterSpacing: "1px",
@@ -419,7 +419,7 @@ export function BriefingDashboard() {
                     height: 48,
                     padding: "0 16px",
                     borderLeft: `3px solid ${isActive ? "var(--color-brand)" : "transparent"}`,
-                    backgroundColor: isActive ? "var(--color-surface-4)" : "transparent",
+                    backgroundColor: isActive ? "var(--bg-active)" : "transparent",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
@@ -429,7 +429,7 @@ export function BriefingDashboard() {
                     transition: "background-color 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.backgroundColor = "var(--color-surface-2)";
+                    if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
                   }}
                   onMouseLeave={(e) => {
                     if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
@@ -437,7 +437,7 @@ export function BriefingDashboard() {
                 >
                   <span
                     style={{
-                      color: isActive ? "#E7ECF5" : "#8A9AB6",
+                      color: isActive ? "var(--text-role-active)" : "var(--text-role-inactive)",
                       fontSize: 14,
                       fontWeight: isActive ? 600 : 400,
                       textTransform: "uppercase",
@@ -471,7 +471,7 @@ export function BriefingDashboard() {
             {/* AI Safety Instructions */}
             <div
               style={{
-                backgroundColor: "#182235",
+                backgroundColor: "var(--bg-card)",
                 borderRadius: 8,
                 overflow: "hidden",
               }}
@@ -482,10 +482,10 @@ export function BriefingDashboard() {
                 style={{ padding: "12px 16px" }}
               >
                 <div className="flex items-center gap-2">
-                  <Sparkles size={14} style={{ color: "#6F8FD9" }} />
+                  <Sparkles size={14} style={{ color: "var(--color-info)" }} />
                   <span
                     style={{
-                      color: "#FFFFFF",
+                      color: "var(--text-primary)",
                       fontSize: 16,
                       fontWeight: 600,
                       letterSpacing: "1px",
@@ -501,10 +501,10 @@ export function BriefingDashboard() {
                   style={{
                     width: 30,
                     height: 30,
-                    backgroundColor: "#1F2B42",
-                    border: "1px solid #253552",
+                    backgroundColor: "var(--bg-button-secondary)",
+                    border: "var(--border-chip)",
                     borderRadius: 6,
-                    color: "#B6C2D9",
+                    color: "var(--text-secondary)",
                   }}
                 >
                   <RefreshCw size={13} />
@@ -517,15 +517,15 @@ export function BriefingDashboard() {
                 <div
                   className="flex items-start gap-2"
                   style={{
-                    backgroundColor: "rgba(247,163,168,0.08)",
-                    borderLeft: "3px solid #F7A3A8",
+                    backgroundColor: "var(--color-error-bg)",
+                    borderLeft: "3px solid var(--text-alert)",
                     borderRadius: "0 4px 4px 0",
                     padding: "8px 12px",
                     marginBottom: 12,
                   }}
                 >
-                  <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "#F7A3A8" }} />
-                  <span style={{ color: "#F7A3A8", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+                  <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "var(--text-alert)" }} />
+                  <span style={{ color: "var(--text-alert)", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
                     {t("briefing.weatherAlert")}
                   </span>
                 </div>
@@ -542,7 +542,7 @@ export function BriefingDashboard() {
                           {section.icon}
                           <span
                             style={{
-                              color: "#8A9AB6",
+                              color: "var(--text-tertiary)",
                               fontSize: 14,
                               fontWeight: 600,
                               letterSpacing: "1px",
@@ -578,7 +578,7 @@ export function BriefingDashboard() {
                                   width: 18,
                                   height: 18,
                                   borderRadius: 3,
-                                  border: item.checked ? "none" : `1px solid var(--color-surface-5)`,
+                                  border: item.checked ? "none" : `var(--border-checkbox)`,
                                   backgroundColor: item.checked ? "var(--color-brand)" : "transparent",
                                   marginTop: 2,
                                 }}
@@ -597,7 +597,7 @@ export function BriefingDashboard() {
                             >
                               <span
                                 style={{
-                                  color: "#E7ECF5",
+                                  color: "var(--text-primary)",
                                   fontSize: 14,
                                   fontWeight: 400,
                                   lineHeight: 1.5,
@@ -621,10 +621,10 @@ export function BriefingDashboard() {
                                   <span
                                     style={{
                                       backgroundColor: "rgba(255,218,138,0.15)",
-                                      border: "1px solid #FFDA8A",
+                                      border: "var(--border-warning)",
                                       borderRadius: 4,
                                       padding: "2px 6px",
-                                      color: "#FFDA8A",
+                                      color: "var(--text-warning)",
                                       fontSize: 10,
                                       fontWeight: 600,
                                       textTransform: "uppercase",
@@ -661,14 +661,14 @@ export function BriefingDashboard() {
                                     }}
                                     onMouseEnter={(e) => {
                                       const svg = e.currentTarget.querySelector("svg");
-                                      if (svg) svg.setAttribute("stroke", "#F7A3A8");
+                                      if (svg) svg.setAttribute("stroke", "var(--text-alert)");
                                     }}
                                     onMouseLeave={(e) => {
                                       const svg = e.currentTarget.querySelector("svg");
-                                      if (svg) svg.setAttribute("stroke", "#5F6F8A");
+                                      if (svg) svg.setAttribute("stroke", "var(--text-muted)");
                                     }}
                                   >
-                                    <X size={14} style={{ color: "#5F6F8A" }} />
+                                    <X size={14} style={{ color: "var(--text-muted)" }} />
                                   </button>
                                 </div>
                               </>
@@ -686,7 +686,7 @@ export function BriefingDashboard() {
                               width: 18,
                               height: 18,
                               borderRadius: 3,
-                              border: "1px solid #253552",
+                              border: "var(--border-checkbox)",
                               backgroundColor: "transparent",
                             }}
                           />
@@ -700,11 +700,11 @@ export function BriefingDashboard() {
                             style={{
                               flex: 1,
                               height: 32,
-                              backgroundColor: "#0E141F",
-                              border: "1px solid #2B5597",
+                              backgroundColor: "var(--bg-input)",
+                              border: "var(--border-active)",
                               borderRadius: 4,
                               padding: "0 12px",
-                              color: "#E7ECF5",
+                              color: "var(--text-primary)",
                               fontSize: 14,
                               fontFamily: "Inter, sans-serif",
                               outline: "none",
@@ -721,10 +721,10 @@ export function BriefingDashboard() {
                               borderRadius: 4,
                               padding: 0,
                             }}
-                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#1F2B42")}
+                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
                             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
                           >
-                            <Check size={14} style={{ color: "#4ED199" }} />
+                            <Check size={14} style={{ color: "var(--color-positive)" }} />
                           </button>
                           <button
                             className="cursor-pointer flex items-center justify-center"
@@ -738,13 +738,13 @@ export function BriefingDashboard() {
                               padding: 0,
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "#F7A3A8");
+                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-alert)");
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "#5F6F8A");
+                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-muted)");
                             }}
                           >
-                            <X size={14} style={{ color: "#5F6F8A" }} />
+                            <X size={14} style={{ color: "var(--text-muted)" }} />
                           </button>
                         </div>
                       ) : (
@@ -755,15 +755,15 @@ export function BriefingDashboard() {
                             backgroundColor: "transparent",
                             border: "none",
                             padding: "6px 0 6px 30px",
-                            color: "#8A9AB6",
+                            color: "var(--text-tertiary)",
                             fontSize: 14,
                             fontWeight: 400,
                             fontFamily: "Inter, sans-serif",
                             textAlign: "left",
                             marginTop: 4,
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#B6C2D9")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#8A9AB6")}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
                         >
                           {t("briefing.addInstruction")}
                         </button>
@@ -809,9 +809,9 @@ function Chip({ text }: { text: string }) {
   return (
     <span
       style={{
-        backgroundColor: "#1F2B42",
-        border: "1px solid #253552",
-        color: "#B6C2D9",
+        backgroundColor: "var(--bg-chip)",
+        border: "var(--border-chip)",
+        color: "var(--text-secondary)",
         fontSize: 12,
         fontWeight: 600,
         borderRadius: 4,

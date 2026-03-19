@@ -107,7 +107,7 @@ Spacer 24px.
 
 Card — bg #182235, border 1px #1F2B42, border-radius 8px, padding 24px:
 
-Section header row: cloud/sun icon in #6F8FD9 + "CURRENT WEATHER CONDITIONS" label in #8A9AB6 at 11px/600 uppercase letter-spacing 1px. Right side: small secondary button "Auto-detect from GPS" with a location-pin icon.
+Section header row: cloud/sun icon in #6F8FD9 + "RIG WEATHER CONDITIONS" label in #8A9AB6 at 11px/600 uppercase letter-spacing 1px. Right side: small secondary button "Auto-detect from GPS" with a location-pin icon.
 
 Spacer 16px.
 

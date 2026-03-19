@@ -123,7 +123,7 @@ export function WeatherSetupScreen() {
   return (
     <div
       className="flex flex-col h-screen w-screen"
-      style={{ backgroundColor: "var(--color-surface-1)", fontFamily: "Inter, sans-serif" }}
+      style={{ backgroundColor: "var(--bg-page)", fontFamily: "Inter, sans-serif" }}
     >
       {/* Header */}
       <Header breadcrumb={t("header.siteConditions")} />
@@ -138,7 +138,7 @@ export function WeatherSetupScreen() {
 
           {/* Title */}
           <div className="flex flex-col gap-2">
-            <h1 style={{ color: "#E7ECF5", fontSize: 20, fontWeight: 700, margin: 0, fontFamily: "Inter, sans-serif" }}>
+            <h1 style={{ color: "var(--text-primary)", fontSize: 20, fontWeight: 700, margin: 0, fontFamily: "Inter, sans-serif" }}>
               {t("weather.title")}
             </h1>
             
@@ -149,7 +149,7 @@ export function WeatherSetupScreen() {
           {/* Card */}
           <div
             style={{
-              backgroundColor: "var(--color-surface-3)",
+              backgroundColor: "var(--bg-card)",
               border: "var(--border-default)",
               borderRadius: 8,
               padding: 24,
@@ -160,17 +160,17 @@ export function WeatherSetupScreen() {
               <div className="flex items-center gap-2">
                 <div className="shrink-0 size-6">
                   <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-                    <path d="M12 2V4" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d="M4.93 4.93L6.34 6.34" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d="M20 12H22" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d="M19.07 4.93L17.66 6.34" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d={svgPaths.p136fbe40} stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                    <path d={svgPaths.p272a0af0} stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d="M12 2V4" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d="M4.93 4.93L6.34 6.34" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d="M20 12H22" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d="M19.07 4.93L17.66 6.34" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d={svgPaths.p136fbe40} stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                    <path d={svgPaths.p272a0af0} stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
                   </svg>
                 </div>
                 <span
                   style={{
-                    color: "#E7ECF5",
+                    color: "var(--text-primary)",
                     fontSize: 16,
                     fontWeight: 600,
                     letterSpacing: "1px",
@@ -186,10 +186,10 @@ export function WeatherSetupScreen() {
                 className="flex items-center gap-2 cursor-pointer"
                 style={{
                   backgroundColor: "transparent",
-                  border: "1px solid #2B5597",
+                  border: "var(--border-active)",
                   borderRadius: 6,
                   padding: "6px 14px",
-                  color: "#B6C2D9",
+                  color: "var(--text-secondary)",
                   fontSize: 14,
                   fontWeight: 500,
                   fontFamily: "Inter, sans-serif",
@@ -198,8 +198,8 @@ export function WeatherSetupScreen() {
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d={svgPaths.p2023d200} stroke="#B6C2D9" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d={svgPaths.p2d617c80} stroke="#B6C2D9" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={svgPaths.p2023d200} stroke="var(--text-secondary)" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={svgPaths.p2d617c80} stroke="var(--text-secondary)" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {t("weather.autoDetect")}
               </button>
@@ -269,7 +269,7 @@ export function WeatherSetupScreen() {
           <div
             className="flex items-start gap-3"
             style={{
-              backgroundColor: "var(--color-surface-3)",
+              backgroundColor: "var(--bg-card)",
               border: "var(--border-default)",
               borderRadius: 6,
               padding: "13px 17px",
@@ -277,9 +277,9 @@ export function WeatherSetupScreen() {
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 mt-0.5">
               <g clipPath="url(#clip_info)">
-                <path d={svgPaths.p39ee6532} stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                <path d="M8 10.6667V8" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
-                <path d="M8 5.33333H8.00667" stroke="#6F8FD9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                <path d={svgPaths.p39ee6532} stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                <path d="M8 10.6667V8" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
+                <path d="M8 5.33333H8.00667" stroke="var(--color-info)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.33333" />
               </g>
               <defs>
                 <clipPath id="clip_info">
@@ -287,7 +287,7 @@ export function WeatherSetupScreen() {
                 </clipPath>
               </defs>
             </svg>
-            <span style={{ color: "#B6C2D9", fontSize: 14, fontWeight: 400, lineHeight: 1.5, fontFamily: "Inter, sans-serif" }}>
+            <span style={{ color: "var(--text-secondary)", fontSize: 14, fontWeight: 400, lineHeight: 1.5, fontFamily: "Inter, sans-serif" }}>
               {t("weather.aiNote")}
             </span>
           </div>
