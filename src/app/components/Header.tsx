@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Globe, Check, Video, LogOut } from "lucide-react";
+import { Globe, Check, Video, LogOut, LayoutGrid } from "lucide-react";
 import { useLanguage } from "./LanguageContext";
 import { ThemeToggle } from "./ThemeToggle";
 import { useNavigate, useLocation } from "react-router";
@@ -26,13 +26,16 @@ export function Header({
   const { language, setLanguage, t } = useLanguage();
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showLayoutDropdown, setShowLayoutDropdown] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isBreadcrumbHovered, setIsBreadcrumbHovered] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
-  const { theme } = useTheme();
+  const [isLayoutHovered, setIsLayoutHovered] = useState(false);
   const [isUserHovered, setIsUserHovered] = useState(false);
+  const { theme } = useTheme();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+  const layoutDropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,6 +46,9 @@ export function Header({
       }
       if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
         setShowUserDropdown(false);
+      }
+      if (layoutDropdownRef.current && !layoutDropdownRef.current.contains(event.target as Node)) {
+        setShowLayoutDropdown(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -169,29 +175,183 @@ export function Header({
         {/* Video & Language Icons Group */}
         <div className="flex gap-[8px] items-center shrink-0">
           {/* Watch Safety Video Button - Only on Briefing Dashboard */}
-          {location.pathname === "/briefing" && (
-            <button
-              type="button"
-              onClick={() => navigate("/safety-videos")}
-              onMouseEnter={() => setIsVideoHovered(true)}
-              onMouseLeave={() => setIsVideoHovered(false)}
-              className="flex items-center justify-center cursor-pointer shrink-0"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "var(--border-radius-md)",
-                backgroundColor: isVideoHovered ? "var(--bg-hover)" : "transparent",
-                border: "none",
-                padding: 0,
-              }}
-            >
-              <Video
-                size={18}
+          {(location.pathname === "/briefing" || location.pathname === "/briefing-v2") && (
+            <div className="flex items-center gap-[8px]">
+              {/* Layout Switcher */}
+              <div ref={layoutDropdownRef} className="relative flex items-center shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setShowLayoutDropdown(!showLayoutDropdown)}
+                  onMouseEnter={() => setIsLayoutHovered(true)}
+                  onMouseLeave={() => setIsLayoutHovered(false)}
+                  className="flex items-center justify-center cursor-pointer"
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "var(--border-radius-md)",
+                    backgroundColor: isLayoutHovered || showLayoutDropdown ? "var(--bg-hover)" : "transparent",
+                    border: "none",
+                    padding: 0,
+                  }}
+                >
+                  <LayoutGrid
+                    size={18}
+                    style={{
+                      color: showLayoutDropdown
+                        ? "var(--color-brand)"
+                        : isLayoutHovered
+                          ? "var(--color-text-primary)"
+                          : "var(--color-text-tertiary)",
+                    }}
+                  />
+                </button>
+
+                {/* Layout Dropdown */}
+                {showLayoutDropdown && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      marginTop: 6,
+                      width: 160,
+                      backgroundColor: "var(--bg-card)",
+                      border: "var(--border-default)",
+                      borderRadius: "var(--border-radius-lg)",
+                      boxShadow: "var(--shadow-dropdown)",
+                      padding: "6px 0",
+                      zIndex: 1000,
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "8px 12px",
+                        borderBottom: "var(--border-default)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "var(--color-text-tertiary)",
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: "1px",
+                          textTransform: "uppercase",
+                          fontFamily: "Inter, sans-serif",
+                        }}
+                      >
+                        LAYOUTS
+                      </span>
+                    </div>
+
+                    {/* Layout 1 Option */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/briefing");
+                        setShowLayoutDropdown(false);
+                      }}
+                      className="w-full cursor-pointer"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "10px 12px",
+                        backgroundColor: location.pathname === "/briefing" ? "var(--bg-active)" : "transparent",
+                        border: "none",
+                        borderLeft: location.pathname === "/briefing" ? "3px solid var(--color-brand)" : "3px solid transparent",
+                        textAlign: "left",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (location.pathname !== "/briefing") e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (location.pathname !== "/briefing") e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
+                      <span
+                        style={{
+                          flex: 1,
+                          color: location.pathname === "/briefing" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+                          fontSize: 13,
+                          fontWeight: 400,
+                        }}
+                      >
+                        Layout 1
+                      </span>
+                      {location.pathname === "/briefing" && (
+                        <Check size={14} style={{ color: "var(--color-success)", flexShrink: 0 }} />
+                      )}
+                    </button>
+
+                    {/* Layout 2 Option */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate("/briefing-v2");
+                        setShowLayoutDropdown(false);
+                      }}
+                      className="w-full cursor-pointer"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "10px 12px",
+                        backgroundColor: location.pathname === "/briefing-v2" ? "var(--bg-active)" : "transparent",
+                        border: "none",
+                        borderLeft: location.pathname === "/briefing-v2" ? "3px solid var(--color-brand)" : "3px solid transparent",
+                        textAlign: "left",
+                        fontFamily: "Inter, sans-serif",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (location.pathname !== "/briefing-v2") e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (location.pathname !== "/briefing-v2") e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
+                      <span
+                        style={{
+                          flex: 1,
+                          color: location.pathname === "/briefing-v2" ? "var(--color-text-primary)" : "var(--color-text-secondary)",
+                          fontSize: 13,
+                          fontWeight: 400,
+                        }}
+                      >
+                        Layout 2
+                      </span>
+                      {location.pathname === "/briefing-v2" && (
+                        <Check size={14} style={{ color: "var(--color-success)", flexShrink: 0 }} />
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Watch Safety Video Button */}
+              <button
+                type="button"
+                onClick={() => navigate("/safety-videos")}
+                onMouseEnter={() => setIsVideoHovered(true)}
+                onMouseLeave={() => setIsVideoHovered(false)}
+                className="flex items-center justify-center cursor-pointer shrink-0"
                 style={{
-                  color: isVideoHovered ? "var(--color-text-primary)" : "var(--color-text-tertiary)",
+                  width: 32,
+                  height: 32,
+                  borderRadius: "var(--border-radius-md)",
+                  backgroundColor: isVideoHovered ? "var(--bg-hover)" : "transparent",
+                  border: "none",
+                  padding: 0,
                 }}
-              />
-            </button>
+              >
+                <Video
+                  size={18}
+                  style={{
+                    color: isVideoHovered ? "var(--color-text-primary)" : "var(--color-text-tertiary)",
+                  }}
+                />
+              </button>
+            </div>
           )}
 
           {/* Theme Toggle */}

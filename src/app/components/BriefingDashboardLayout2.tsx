@@ -120,7 +120,7 @@ interface RoleStatus {
   status: "reviewed" | "not-reviewed";
 }
 
-export function BriefingDashboard() {
+export function BriefingDashboardLayout2() {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Role>("DRILLER");
@@ -139,11 +139,9 @@ export function BriefingDashboard() {
     "DERRICKMAN":  derrickmanSections,
   });
 
-  const cardSize = 150; // Adjustable height and image width for role cards
- 
-   useEffect(() => {
-     setSections(roleSections[activeTab]);
-   }, [activeTab, roleSections]);
+  useEffect(() => {
+    setSections(roleSections[activeTab]);
+  }, [activeTab, roleSections]);
 
 
   useEffect(() => {
@@ -341,7 +339,7 @@ export function BriefingDashboard() {
                 onClick={() => setActiveTab(rc.role)}
                 style={{
                   flex: 1,
-                  height: cardSize,
+                  height: 90,
                   display: "flex",
                   backgroundColor: "var(--bg-card)",
                   border: isActive
@@ -362,8 +360,8 @@ export function BriefingDashboard() {
                 {/* Role Image */}
                 <div
                   style={{
-                    width: cardSize,
-                    height: cardSize,
+                    width: 90,
+                    height: 90,
                     flexShrink: 0,
                     backgroundColor: "var(--bg-card)",
                     borderRadius: "var(--border-radius-lg) 0 0 var(--border-radius-lg)",
