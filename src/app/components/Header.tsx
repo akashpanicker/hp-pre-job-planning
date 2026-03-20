@@ -17,7 +17,7 @@ interface HeaderProps {
 
 export function Header({
   breadcrumb = "Site Conditions",
-  userName = "J. Martinez",
+  userName = "Marcos",
   userRole = "Drilling Manager",
   userInitials = "DM",
   showOnlineStatus = true,
@@ -87,7 +87,7 @@ export function Header({
         {/* Title & Breadcrumb */}
         <div className="flex flex-col h-full items-start justify-center pb-[4px] relative shrink-0">
           <div className="flex gap-[8px] items-center mb-[-4px] relative shrink-0">
-            <div 
+            <div
               className="flex flex-col font-['Inter',sans-serif] font-semibold justify-end leading-[0] not-italic relative shrink-0 text-[18px] whitespace-nowrap"
               style={{ color: "var(--text-primary)" }}
             >
@@ -221,8 +221,8 @@ export function Header({
                   color: showLangDropdown
                     ? "var(--color-brand)"
                     : isHovered
-                    ? "var(--color-text-primary)"
-                    : "var(--color-text-tertiary)",
+                      ? "var(--color-text-primary)"
+                      : "var(--color-text-tertiary)",
                 }}
               />
               <span

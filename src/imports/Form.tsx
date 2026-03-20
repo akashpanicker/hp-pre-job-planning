@@ -209,7 +209,11 @@ export default function Form({ onNavigate }: FormProps) {
             </p>
           </button>
           
-          <div className="bg-[var(--border-default)] h-px shrink-0 w-full" data-name="Container" />
+          <div 
+            style={{ backgroundColor: "var(--color-surface-3)" }} 
+            className="h-px shrink-0 w-full" 
+            data-name="Container" 
+          />
           
           <button
             type="button"

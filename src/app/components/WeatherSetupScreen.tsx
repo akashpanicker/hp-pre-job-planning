@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { X } from "lucide-react";
+import { X, Bot } from "lucide-react";
 import { AIProcessingModal } from "./AIProcessingModal";
 import { StickyFooter, FooterButton } from "./StickyFooter";
 import { Header } from "./Header";
@@ -8,6 +8,44 @@ import { SearchableSelect } from "./SearchableSelect";
 import { CreatableMultiSelect } from "./CreatableMultiSelect";
 import { useLanguage } from "./LanguageContext";
 import svgPaths from "../../imports/svg-n0t5roau72";
+
+// ─── Custom Animated Bot Icon ────────────────────────────────────────────────
+function VUIBotIcon({ size = 24, color = "white", className = "" }: { size?: number; color?: string; className?: string }) {
+  return (
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      className={`vui-bot-container ${className}`}
+    >
+      {/* Thinking Particles */}
+      <circle className="vui-particle p1" cx="18" cy="5" r="1.2" fill={color} opacity="0" />
+      <circle className="vui-particle p2" cx="20" cy="8" r="0.8" fill={color} opacity="0" />
+      <circle className="vui-particle p3" cx="16" cy="3" r="0.6" fill={color} opacity="0" />
+
+      {/* Main Bot Group */}
+      <g className="vui-bot-main">
+        {/* Antenna */}
+        <line x1="12" y1="8" x2="12" y2="4" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+        <circle className="vui-antenna-tip" cx="12" cy="3" r="1.5" fill={color} />
+        
+        {/* Head & Body */}
+        <rect x="5" y="8" width="14" height="12" rx="3.5" stroke={color} strokeWidth="1.8" />
+        <rect x="8" y="11" width="8" height="5" rx="1.5" fill={color} opacity="0.1" />
+        
+        {/* Eyes */}
+        <g className="vui-eyes">
+          <path className="vui-eye left" d="M9 13.5 C 9 13.5, 9.5 12.5, 10.5 12.5 C 11.5 12.5, 12 13.5, 12 13.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+          <path className="vui-eye right" d="M13.5 13.5 C 13.5 13.5, 14 12.5, 15 12.5 C 16 12.5, 16.5 13.5, 16.5 13.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" />
+        </g>
+
+        {/* Mouth/Panel */}
+        <line x1="10" y1="17" x2="14" y2="17" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+      </g>
+    </svg>
+  );
+}
 
 // ─── Voice chatbot ─────────────────────────────────────────────────────────────
 interface ParsedVoiceData {
@@ -93,15 +131,18 @@ function buildFillSummary(data: ParsedVoiceData): string {
 function VoiceChatbot({
   onFill,
   onClose,
+  animationClass,
 }: {
   onFill: (data: ParsedVoiceData) => void;
   onClose: () => void;
+  animationClass?: string;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: "assistant", text: "Hi! I'm listening. Describe the conditions — e.g. \"The weather is cloudy, site is muddy, planning to run 9-5/8 casing.\"" },
   ]);
   const [isListening, setIsListening] = useState(false);
   const [isFilling, setIsFilling] = useState(false);
+  const [inputValue, setInputValue] = useState("");
   const recognitionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -110,9 +151,33 @@ function VoiceChatbot({
   }, [messages]);
 
   useEffect(() => {
-    startListening();
+    // Optional: Start listening on mount, but let's make it manual for better control if needed
+    // startListening();
     return () => { try { recognitionRef.current?.stop(); } catch {} };
   }, []);
+
+  const handleProcessInput = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    // Add user message
+    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
+    
+    // Process matching logic
+    setTimeout(() => {
+      const parsed = parseVoiceInput(trimmed);
+      const summary = buildFillSummary(parsed);
+      setMessages((prev) => [...prev, { role: "assistant", text: summary }]);
+      
+      if (Object.keys(parsed).length > 0) {
+        setIsFilling(true);
+        setTimeout(() => { 
+          onFill(parsed); 
+          setIsFilling(false); 
+        }, 800);
+      }
+    }, 400);
+  };
 
   const startListening = () => {
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -120,6 +185,11 @@ function VoiceChatbot({
       setMessages((prev) => [...prev, { role: "assistant", text: "Voice recognition isn't supported in this browser. Please use Chrome or Edge." }]);
       return;
     }
+    
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+
     const rec = new SR();
     rec.continuous = false;
     rec.interimResults = false;
@@ -128,33 +198,40 @@ function VoiceChatbot({
 
     rec.onstart  = () => setIsListening(true);
     rec.onend    = () => setIsListening(false);
-    rec.onerror  = () => {
+    rec.onerror  = (event: any) => {
       setIsListening(false);
-      setMessages((prev) => [...prev, { role: "assistant", text: "Couldn't catch that. Tap the mic to try again." }]);
+      console.error("Speech recognition error", event.error);
+      if (event.error !== 'no-speech') {
+        setMessages((prev) => [...prev, { role: "assistant", text: "Couldn't catch that. Tap the mic to try again." }]);
+      }
     };
+    
     rec.onresult = (e: any) => {
       const transcript = e.results[0][0].transcript;
-      setMessages((prev) => [...prev, { role: "user", text: transcript }]);
-      setTimeout(() => {
-        const parsed = parseVoiceInput(transcript);
-        const summary = buildFillSummary(parsed);
-        setMessages((prev) => [...prev, { role: "assistant", text: summary }]);
-        if (Object.keys(parsed).length > 0) {
-          setIsFilling(true);
-          setTimeout(() => { onFill(parsed); setIsFilling(false); }, 600);
-        }
-      }, 400);
+      if (e.results[0].isFinal) {
+        handleProcessInput(transcript);
+      }
     };
+    
     try { rec.start(); } catch {}
+  };
+
+  const handleSendText = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (inputValue.trim()) {
+      handleProcessInput(inputValue);
+      setInputValue("");
+    }
   };
 
   return (
     <div
+      className={animationClass}
       style={{
         position: "fixed",
-        bottom: 90,
+        bottom: 156,
         right: 32,
-        width: 320,
+        width: 360,
         backgroundColor: "var(--bg-card)",
         border: "var(--border-card)",
         borderRadius: "var(--border-radius-lg)",
@@ -164,10 +241,12 @@ function VoiceChatbot({
         flexDirection: "column",
         overflow: "hidden",
         fontFamily: "Inter, sans-serif",
+        transformOrigin: "bottom right",
       }}
     >
       {/* Header */}
       <div
+        className="vui-stagger-1"
         style={{
           display: "flex",
           alignItems: "center",
@@ -190,36 +269,40 @@ function VoiceChatbot({
               flexShrink: 0,
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <rect x="9" y="2" width="6" height="11" rx="3" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M5 10a7 7 0 0 0 14 0" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-              <line x1="12" y1="17" x2="12" y2="21" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
+            <VUIBotIcon size={20} color="white" />
           </div>
           <div>
             <div style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: 13 }}>Voice Assistant</div>
-            <div style={{ color: isListening ? "var(--color-positive)" : "var(--text-muted)", fontSize: 11 }}>
-              {isListening ? "● Listening…" : isFilling ? "Filling form…" : "Ready"}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  backgroundColor: isListening ? "var(--color-positive)" : "var(--color-positive)",
+                  opacity: isListening ? 1 : 0.7,
+                  animation: "status-pulse 2s ease-in-out infinite",
+                }}
+              />
+              <div style={{ color: isListening ? "var(--color-positive)" : "var(--text-muted)", fontSize: 11 }}>
+                {isListening ? "● Listening…" : isFilling ? "Filling form…" : "Ready"}
+              </div>
             </div>
           </div>
         </div>
-        <button
-          onClick={onClose}
-          style={{ background: "transparent", border: "none", cursor: "pointer", padding: 4, display: "flex" }}
-        >
-          <X size={16} style={{ color: "var(--text-tertiary)" }} />
-        </button>
       </div>
 
       {/* Messages */}
       <div
+        className="vui-stagger-2"
         style={{
           padding: "12px",
-          maxHeight: 220,
+          maxHeight: 380,
+          minHeight: 120,
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
-          gap: 8,
+          gap: 10,
         }}
       >
         {messages.map((msg, i) => (
@@ -270,53 +353,87 @@ function VoiceChatbot({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Footer */}
-      <div
+      {/* Footer / Input area */}
+      <form
+        onSubmit={handleSendText}
+        className="vui-stagger-3"
         style={{
-          padding: "10px 14px",
+          padding: "10px 12px",
           borderTop: "var(--border-default)",
           display: "flex",
           alignItems: "center",
-          gap: 10,
+          gap: 8,
+          backgroundColor: "var(--bg-header)",
         }}
       >
-        <button
-          onClick={startListening}
-          disabled={isListening || isFilling}
-          title="Tap to speak"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-            backgroundColor: isListening ? "var(--color-negative)" : "var(--color-brand)",
-            border: "none",
-            cursor: isListening || isFilling ? "default" : "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            opacity: isFilling ? 0.5 : 1,
-            transition: "background-color 0.2s",
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="2" width="6" height="11" rx="3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M5 10a7 7 0 0 0 14 0" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <line x1="12" y1="17" x2="12" y2="21" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-            <line x1="9" y1="21" x2="15" y2="21" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
-        </button>
-        <span style={{ color: "var(--text-muted)", fontSize: 11, lineHeight: 1.4 }}>
-          {isListening ? "Speak now — mention weather, site condition, or plan" : "Tap mic to speak again"}
-        </span>
-      </div>
+        <div style={{ position: "relative" }}>
+          <button
+            type="button"
+            onClick={startListening}
+            disabled={isListening || isFilling}
+            className="vui-mic-btn"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: "50%",
+              backgroundColor: isListening ? "var(--color-negative)" : "var(--color-brand)",
+              border: "none",
+              cursor: isListening || isFilling ? "default" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              opacity: isFilling ? 0.5 : 1,
+              transition: "all 0.15s ease",
+              boxShadow: isListening ? "0 0 10px rgba(239, 68, 68, 0.4)" : "none",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <rect x="9" y="2" width="6" height="11" rx="3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M5 10a7 7 0 0 0 14 0" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="12" y1="17" x2="12" y2="21" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+              <line x1="9" y1="21" x2="15" y2="21" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
 
-      <style>{`
-        @keyframes pulse-dot {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-          40% { transform: scale(1); opacity: 1; }
-        }
-      `}</style>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder={isListening ? "Listening..." : "Type here..."}
+          disabled={isFilling}
+          style={{
+            flex: 1,
+            height: 36,
+            backgroundColor: "var(--color-surface-1)",
+            border: "var(--border-input)",
+            borderRadius: 18,
+            padding: "0 14px",
+            fontSize: 13,
+            color: "var(--text-primary)",
+            outline: "none",
+            fontFamily: "Inter, sans-serif",
+          }}
+        />
+
+        {inputValue.trim() && (
+          <button
+            type="submit"
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              color: "var(--color-brand)",
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: "pointer",
+              padding: "0 4px",
+            }}
+          >
+            Send
+          </button>
+        )}
+      </form>
     </div>
   );
 }
@@ -351,7 +468,17 @@ export function WeatherSetupScreen() {
   const [showCrewPlaceholder, setShowCrewPlaceholder] = useState(true);
   const [inputPlan, setInputPlan] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showChatbot, setShowChatbot] = useState(false);
+  const [panelStatus, setPanelStatus] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
+
+  const handleOpenChat = () => {
+    setPanelStatus('opening');
+    setTimeout(() => setPanelStatus('open'), 350);
+  };
+
+  const handleCloseChat = () => {
+    setPanelStatus('closing');
+    setTimeout(() => setPanelStatus('closed'), 250);
+  };
 
   const handleVoiceFill = (data: ParsedVoiceData) => {
     if (data.weather)        setWeatherConditions(data.weather);
@@ -396,6 +523,16 @@ export function WeatherSetupScreen() {
   ];
 
   const handleGenerate = () => setShowModal(true);
+
+  const handleAutoDetect = () => {
+    // Simulate GPS detection of location
+    setSelectedRig("rig-145"); // Rig 145 — Midland, TX
+    
+    setWeatherConditions(["light-rain", "overcast"]);
+    
+    // Explicitly reset or keep site condition empty for manual verification by the Manager
+    setSelectedSiteCondition("");
+  };
 
   // ── Field label style ──────────────────────────────────────────────────────
   const fieldLabel: React.CSSProperties = {
@@ -455,20 +592,30 @@ export function WeatherSetupScreen() {
 
             {/* Auto-detect from GPS */}
             <button
-              type="button"
-              className="flex items-center gap-2 cursor-pointer"
+              onClick={handleAutoDetect}
+              className="cursor-pointer"
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
                 backgroundColor: "transparent",
-                border: "var(--border-active)",
+                border: "1px solid var(--color-brand)",
                 borderRadius: "var(--border-radius-md)",
                 padding: "8px 16px",
-                color: "var(--text-secondary)",
+                color: "var(--color-brand)",
                 fontSize: 14,
-                fontWeight: 500,
+                fontWeight: 600,
                 fontFamily: "Inter, sans-serif",
+                transition: "all 0.15s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(43,85,151,0.12)")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-surface-3)";
+                e.currentTarget.style.borderColor = "var(--color-brand)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.borderColor = "var(--color-brand)";
+              }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <circle cx="7" cy="7" r="2.5" stroke="var(--color-brand)" strokeWidth="1.2" />
@@ -699,51 +846,227 @@ export function WeatherSetupScreen() {
         />
       </StickyFooter>
 
-      {/* Voice chatbot FAB */}
-      {!showChatbot && (
+      {/* Voice chatbot trigger FAB / Animation states */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 96,
+          right: 32,
+          zIndex: 101, // Higher than panel
+          transition: 'all 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67)',
+        }}
+      >
+        {/* Breathing pulse ring - only while closed */}
+        {panelStatus === 'closed' && (
+          <div
+            className="vui-breathing-ring"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              borderRadius: "50%",
+              backgroundColor: "var(--color-brand)",
+              opacity: 0.3,
+              zIndex: -1,
+            }}
+          />
+        )}
         <button
           type="button"
-          title="Fill form with voice"
-          onClick={() => setShowChatbot(true)}
+          title={panelStatus === 'open' || panelStatus === 'opening' ? "Close assistant" : "Fill form with voice"}
+          onClick={panelStatus === 'open' || panelStatus === 'opening' ? handleCloseChat : handleOpenChat}
+          className="vui-fab-trigger"
           style={{
-            position: "fixed",
-            bottom: 96,
-            right: 32,
             width: 52,
             height: 52,
             borderRadius: "50%",
-            backgroundColor: "var(--color-brand)",
+            backgroundColor: (panelStatus === 'open' || panelStatus === 'opening') ? "var(--color-surface-5)" : "var(--color-brand)",
             border: "none",
             boxShadow: "var(--shadow-modal)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
-            zIndex: 50,
-            transition: "background-color 0.15s",
+            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+            transform: (panelStatus === 'open' || panelStatus === 'opening') ? "rotate(90deg)" : "rotate(0deg)",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-brand-hover)")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-brand)")}
         >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <rect x="9" y="2" width="6" height="11" rx="3" stroke="var(--text-on-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M5 10a7 7 0 0 0 14 0" stroke="var(--text-on-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            <line x1="12" y1="17" x2="12" y2="21" stroke="var(--text-on-primary)" strokeWidth="1.8" strokeLinecap="round" />
-            <line x1="9" y1="21" x2="15" y2="21" stroke="var(--text-on-primary)" strokeWidth="1.8" strokeLinecap="round" />
-          </svg>
+          {(panelStatus === 'open' || panelStatus === 'opening' || panelStatus === 'closing') ? (
+            <X size={24} color={panelStatus === 'closing' ? "white" : "var(--color-text-primary)"} />
+          ) : (
+            <VUIBotIcon className="vui-bot-icon" size={28} color="var(--text-on-primary)" />
+          )}
         </button>
-      )}
+      </div>
 
       {/* Voice chatbot panel */}
-      {showChatbot && (
+      {panelStatus !== 'closed' && (
         <VoiceChatbot
           onFill={handleVoiceFill}
-          onClose={() => setShowChatbot(false)}
+          onClose={handleCloseChat}
+          animationClass={panelStatus === 'opening' ? 'vui-panel-open' : (panelStatus === 'closing' ? 'vui-panel-close' : '')}
         />
       )}
 
       {/* AI Processing Modal */}
       {showModal && <AIProcessingModal onComplete={() => navigate("/briefing")} />}
+
+      {/* VUI Styles */}
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse-ring {
+          0%   { transform: scale(1);   opacity: 0.4; }
+          100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        @keyframes chat-open {
+          0% {
+            opacity: 0;
+            transform: scale(0.6) translateY(40px) translateX(40px);
+            transform-origin: bottom right;
+          }
+          60% {
+            opacity: 1;
+            transform: scale(1.02) translateY(-4px) translateX(0);
+            transform-origin: bottom right;
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0) translateX(0);
+            transform-origin: bottom right;
+          }
+        }
+
+        @keyframes chat-close {
+          0% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            transform-origin: bottom right;
+          }
+          100% {
+            opacity: 0;
+            transform: scale(0.7) translateY(24px) translateX(24px);
+            transform-origin: bottom right;
+          }
+        }
+
+        @keyframes fade-up {
+          0%   { opacity: 0; transform: translateY(8px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes status-pulse {
+          0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+          50%       { opacity: 0.8; box-shadow: 0 0 0 4px rgba(74, 222, 128, 0); }
+        }
+
+        @keyframes bot-bob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(2.5px); }
+        }
+
+        @keyframes bot-blink {
+          0%, 48%, 52%, 100% { transform: scaleY(1); }
+          50% { transform: scaleY(0.1); }
+        }
+
+        @keyframes antenna-pulse {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.3); filter: brightness(1.4); }
+        }
+
+        @keyframes particle-pop {
+          0% { transform: translate(0, 0) scale(0); opacity: 0; }
+          50% { transform: translate(2px, -4px) scale(1); opacity: 0.8; }
+          100% { transform: translate(4px, -8px) scale(0); opacity: 0; }
+        }
+
+        @keyframes vui-bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+
+        .vui-bot-main {
+          animation: bot-bob 3s ease-in-out infinite;
+          transform-origin: center;
+          transform-box: fill-box;
+        }
+
+        .vui-eyes {
+          animation: bot-blink 4s ease-in-out infinite;
+          transform-origin: center;
+          transform-box: fill-box;
+        }
+
+        .vui-antenna-tip {
+          animation: antenna-pulse 2s ease-in-out infinite;
+          transform-origin: center;
+          transform-box: fill-box;
+        }
+
+        .vui-particle {
+          animation: particle-pop 2.5s ease-in-out infinite;
+          transform-origin: center;
+          transform-box: fill-box;
+        }
+        .vui-particle.p1 { animation-delay: 0s; }
+        .vui-particle.p2 { animation-delay: 0.8s; }
+        .vui-particle.p3 { animation-delay: 1.5s; }
+
+        .vui-breathing-ring {
+          animation: pulse-ring 3s ease-out infinite;
+        }
+
+        .vui-fab-trigger:hover {
+          transform: scale(1.08) !important;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+        }
+
+        .vui-fab-trigger:hover .vui-bot-icon {
+          animation: vui-bounce 0.8s ease-in-out infinite;
+        }
+
+        .vui-fab-trigger:hover .vui-bot-main {
+          animation-duration: 0.5s;
+        }
+
+        .vui-fab-trigger:active {
+          transform: scale(0.92) !important;
+        }
+
+        .vui-panel-open {
+          animation: chat-open 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .vui-panel-close {
+          animation: chat-close 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+        }
+
+        .vui-stagger-1 { animation: fade-up 0.25s ease-out 0.05s both; }
+        .vui-stagger-2 { animation: fade-up 0.25s ease-out 0.12s both; }
+        .vui-stagger-3 { animation: fade-up 0.25s ease-out 0.18s both; }
+
+        .vui-mic-btn:hover {
+          transform: scale(1.1);
+        }
+        
+        .vui-mic-btn:active {
+          transform: scale(0.9);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          * { 
+            animation-duration: 0.01ms !important; 
+            transition-duration: 0.01ms !important; 
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -47,7 +47,7 @@ const translations: Record<string, Record<Language, string>> = {
   "weather.hazardsPlaceholder": { en: "E.g. wet surfaces from overnight rain, high UV index, construction near rig floor...", es: "Ej. superficies mojadas por lluvia nocturna, alto índice UV, construcción cerca del piso del equipo..." },
   "weather.aiNote": { en: "AI will generate role-specific safety instructions based on the weather and site conditions you enter above.", es: "La IA generará instrucciones de seguridad específicas por rol basadas en las condiciones climáticas y del sitio que ingrese arriba." },
   "weather.back": { en: "Back", es: "Atrás" },
-  "weather.generate": { en: "Generate Safety Briefing →", es: "Generar Instrucciones de Seguridad →" },
+  "weather.generate": { en: "Generate Briefing →", es: "Generar Instrucciones →" },
 
   // Weather options
   "weather.opt.clear": { en: "Clear", es: "Despejado" },

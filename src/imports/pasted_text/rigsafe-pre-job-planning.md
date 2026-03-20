@@ -88,7 +88,7 @@ Bottom of screen: status bar strip — full width, height 32px, bg #121A28, bord
 
 ## SCREEN 2 — WEATHER & SHIFT SETUP
 
-Full viewport. Header bar 52px: bg #121A28, bottom border 1px #5F6F8A. Left: "H&P" in #2B5597 bold + " | Pre-Job Planning" in #8A9AB6. Right: logged-in user chip showing avatar circle (initials "DM") in #2B5597 bg + "J. Martinez — Drilling Manager" in #B6C2D9 at 12px/500.
+Full viewport. Header bar 52px: bg #121A28, bottom border 1px #5F6F8A. Left: "H&P" in #2B5597 bold + " | Pre-Job Planning" in #8A9AB6. Right: logged-in user chip showing avatar circle (initials "DM") in #2B5597 bg + "Marcos — Drilling Manager" in #B6C2D9 at 12px/500.
 
 Main content centered, max-width 640px, padding-top 64px:
 
