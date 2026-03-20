@@ -10,6 +10,7 @@ import {
   Check,
   ArrowLeft,
   X,
+  Maximize2,
 } from "lucide-react";
 import { StickyFooter, FooterButton } from "./StickyFooter";
 import { Header } from "./Header";
@@ -24,6 +25,7 @@ interface CheckItem {
   text: string;
   checked: boolean;
   isCustom?: boolean;
+  imageUrl?: string;
 }
 
 interface Section {
@@ -37,11 +39,10 @@ const drillerSections: Section[] = [
     label: "THINGS TO REMEMBER",
     icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
-      { text: "Confirm BOP test completed before spudding operations", checked: false },
-      { text: "Verify weight indicator and deadline anchor are calibrated", checked: false },
-      { text: "Monitor hook load limits — do not exceed rated capacity", checked: false },
-      { text: "Confirm top drive torque settings for today's pipe size", checked: false },
-      { text: "Check driller's console emergency stop is functional", checked: false },
+      { text: "Confirm BOP test completed before spudding operations", checked: false, imageUrl: "/artifacts/driller_bop_test_user.jpg" },
+      { text: "Verify weight indicator and deadline anchor are calibrated", checked: false, imageUrl: "/artifacts/driller_weight.png" },
+      { text: "Monitor hook load limits — do not exceed rated capacity", checked: false, imageUrl: "/artifacts/driller_hook_load.png" },
+      { text: "Confirm top drive torque settings for today's pipe size", checked: false, imageUrl: "/artifacts/driller_top_drive.png" },
     ],
   },
 ];
@@ -51,12 +52,10 @@ const floorman1Sections: Section[] = [
     label: "THINGS TO REMEMBER",
     icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
-      { text: "Inspect all tongs and dies before making connections", checked: false },
-      { text: "Confirm stabbing board is secured before running casing", checked: false },
-      { text: "Wear cut-resistant gloves during all pipe handling", checked: false },
-      { text: "Verify floor safety gates are latched before rotary is engaged", checked: false },
-      { text: "Keep clear of the rotary table during drilling operations", checked: false },
-      { text: "Check cat line and tugger line for wear before use", checked: false },
+      { text: "Inspect all tongs and dies before making connections", checked: false, imageUrl: "/artifacts/floorman1_tongs.png" },
+      { text: "Confirm stabbing board is secured before running casing", checked: false, imageUrl: "/artifacts/floorman1_stabbing.png" },
+      { text: "Wear cut-resistant gloves during all pipe handling", checked: false, imageUrl: "/artifacts/floorman1_gloves.png" },
+      { text: "Verify floor safety gates are latched before rotary is engaged", checked: false, imageUrl: "/artifacts/floorman1_gates.png" },
     ],
   },
 ];
@@ -66,12 +65,10 @@ const floorman2Sections: Section[] = [
     label: "THINGS TO REMEMBER",
     icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
-      { text: "Confirm iron roughneck is properly aligned before each connection", checked: false },
-      { text: "Inspect spinning chain condition and replace if worn", checked: false },
-      { text: "Keep personnel clear of the V-door during pipe pickup", checked: false },
-      { text: "Verify all hand tools are secured and inventoried", checked: false },
-      { text: "Report any dropped objects immediately to the Driller", checked: false },
-      { text: "Confirm drill line slip-and-cut schedule is up to date", checked: false },
+      { text: "Confirm iron roughneck is properly aligned before each connection", checked: false, imageUrl: "/artifacts/floorman2_roughneck.png" },
+      { text: "Inspect spinning chain condition and replace if worn", checked: false, imageUrl: "/artifacts/floorman2_chain.png" },
+      { text: "Keep personnel clear of the V-door during pipe pickup", checked: false, imageUrl: "/artifacts/floorman2_vdoor.png" },
+      { text: "Verify all hand tools are secured and inventoried", checked: false, imageUrl: "/artifacts/floorman2_tools.png" },
     ],
   },
 ];
@@ -81,12 +78,10 @@ const pitHandSections: Section[] = [
     label: "THINGS TO REMEMBER",
     icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
-      { text: "Check all pit levels and record baseline readings", checked: false },
-      { text: "Monitor mud weight and viscosity every 30 minutes", checked: false },
-      { text: "Inspect shaker screens for damage before circulating", checked: false },
-      { text: "Confirm chemical inventory levels — flag any low stock", checked: false },
-      { text: "Verify trip tank is zeroed and functional before tripping", checked: false },
-      { text: "Check all agitators and degasser are running correctly", checked: false },
+      { text: "Check all pit levels and record baseline readings", checked: false, imageUrl: "/artifacts/pithand_levels.png" },
+      { text: "Monitor mud weight and viscosity every 30 minutes", checked: false, imageUrl: "/artifacts/pithand_mud.png" },
+      { text: "Inspect shaker screens for damage before circulating", checked: false, imageUrl: "/artifacts/pithand_shaker.png" },
+      { text: "Confirm chemical inventory levels — flag any low stock", checked: false, imageUrl: "/artifacts/pithand_chemicals.png" },
     ],
   },
 ];
@@ -96,12 +91,10 @@ const derrickmanSections: Section[] = [
     label: "THINGS TO REMEMBER",
     icon: <ClipboardCheck size={14} style={{ color: "var(--text-tertiary)" }} />,
     items: [
-      { text: "Inspect elevator links and bails before tripping operations", checked: false },
-      { text: "Confirm monkey board safety latch is engaged", checked: false },
-      { text: "Verify derrick lights are operational for low-visibility conditions", checked: false },
-      { text: "Check all racking board fingers are properly positioned", checked: false },
-      { text: "Inspect traveling block and crown-o-matic settings", checked: false },
-      { text: "Confirm escape line and derrick safety harness are in good condition", checked: false },
+      { text: "Inspect elevator links and bails before tripping operations", checked: false, imageUrl: "/artifacts/derrickman_links.png" },
+      { text: "Confirm monkey board safety latch is engaged", checked: false, imageUrl: "/artifacts/derrickman_monkey.png" },
+      { text: "Verify derrick lights are operational for low-visibility conditions", checked: false, imageUrl: "/artifacts/derrickman_lights.png" },
+      { text: "Check all racking board fingers are properly positioned", checked: false, imageUrl: "/artifacts/derrickman_racking.png" },
     ],
   },
 ];
@@ -140,6 +133,16 @@ export function BriefingDashboard() {
   });
 
   const cardSize = 150; // Adjustable height and image width for role cards
+  
+  // Animation State
+  type RoleCardState = 'idle' | 'expanding' | 'expanded' | 'collapsing';
+  const [cardState, setCardState] = useState<RoleCardState>('expanded');
+  const [expandingRole, setExpandingRole] = useState<Role | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const expandTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
  
    useEffect(() => {
      setSections(roleSections[activeTab]);
@@ -266,6 +269,61 @@ export function BriefingDashboard() {
   const activeRoleCard = ROLE_CARDS.find((rc) => rc.role === activeTab);
   const activeRoleDisplayName = activeRoleCard?.displayName.toUpperCase() ?? activeTab;
 
+  const getCardScale = (index: number, currentHoveredIndex: number | null) => {
+    if (currentHoveredIndex === null) return 1;
+    const distance = Math.abs(index - currentHoveredIndex);
+    if (distance === 0) return 1.04; // Slightly toned down primary scale
+    if (distance === 1) return 1.01; // Barely noticeably scale for neighbors
+    return 1;
+  };
+
+  const handleRoleClick = (role: Role) => {
+    if (role === activeTab) return;
+
+    if (expandTimeoutRef.current) {
+      clearTimeout(expandTimeoutRef.current);
+    }
+
+    // 1. Record the card's current position (FIRST)
+    const cardEl = cardRefs.current[role];
+    const panelEl = panelRef.current;
+    if (!cardEl || !panelEl) return;
+
+    const cardRect = cardEl.getBoundingClientRect();
+    const panelRect = panelEl.getBoundingClientRect();
+
+    // 2. Calculate the transform needed (INVERT)
+    const deltaX = cardRect.left - panelRect.left;
+    const deltaY = cardRect.top - panelRect.top;
+    const scaleX = cardRect.width / panelRect.width;
+    const scaleY = cardRect.height / panelRect.height;
+
+    // Update content immediately so panel shows correct role without delay
+    setActiveTab(role);
+    setExpandingRole(role);
+    setCardState('expanding');
+
+    // 3. Apply inverted transform immediately then animate to identity (PLAY)
+    panelEl.style.transformOrigin = 'top left';
+    panelEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+    panelEl.style.transition = 'none';
+    panelEl.style.willChange = 'transform';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        panelEl.style.transform = 'translate(0, 0) scale(1)';
+        panelEl.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+      });
+    });
+
+    expandTimeoutRef.current = setTimeout(() => {
+      setExpandingRole(null);
+      setCardState('expanded');
+      panelEl.style.transition = '';
+      panelEl.style.willChange = '';
+    }, 600);
+  };
+
   return (
     <div
       className="flex flex-col h-screen w-screen"
@@ -330,33 +388,42 @@ export function BriefingDashboard() {
             gap: 16,
             paddingBottom: 16,
           }}
+          onMouseLeave={() => setHoveredIndex(null)}
         >
-          {ROLE_CARDS.map((rc) => {
+          {ROLE_CARDS.map((rc, index) => {
             const isActive = activeTab === rc.role;
+            const isExpanding = expandingRole === rc.role;
+            const isOtherExpanding = expandingRole !== null && !isExpanding;
             const roleStatus = roleStatuses.find((rs) => rs.role === rc.role);
             const isReviewed = roleStatus?.status === "reviewed";
+            const scale = getCardScale(index, hoveredIndex);
+            
             return (
               <div
                 key={rc.role}
-                onClick={() => setActiveTab(rc.role)}
+                ref={(el) => { cardRefs.current[rc.role] = el; }}
+                onClick={() => handleRoleClick(rc.role)}
+                onMouseEnter={() => setHoveredIndex(index)}
                 style={{
                   flex: 1,
                   height: cardSize,
                   display: "flex",
-                  backgroundColor: "var(--bg-card)",
+                  backgroundColor: isActive ? "rgba(var(--color-brand-rgb, 107, 72, 255), 0.05)" : "var(--bg-card)",
                   border: isActive
                     ? "2px solid var(--color-brand)"
-                    : "var(--border-card)",
+                    : isExpanding ? "none" : "var(--border-card)",
+                  borderLeft: isActive ? "3px solid var(--color-brand)" : "var(--border-card)",
                   borderRadius: "var(--border-radius-lg)",
                   overflow: "hidden",
                   cursor: "pointer",
-                  transition: "border-color 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                  transform: isOtherExpanding ? "scale(0.95)" : isActive ? "scale(0.98)" : `scale(${scale})`,
+                  opacity: isOtherExpanding ? 0.5 : (isActive || hoveredIndex === index) ? 1 : 0.6,
+                  boxShadow: hoveredIndex === index 
+                    ? "0 8px 24px rgba(0,0,0,0.15)" 
+                    : isActive 
+                      ? "inset 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05)" 
+                      : "var(--shadow-card)",
+                  transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}
               >
                 {/* Role Image */}
@@ -378,7 +445,7 @@ export function BriefingDashboard() {
                       width: "100%",
                       height: "100%",
                       objectFit: "cover",
-                      filter: isActive ? "none" : "grayscale(30%)",
+                      filter: isActive || hoveredIndex === index ? "none" : "grayscale(30%)",
                       transition: "filter 0.2s",
                     }}
                   />
@@ -426,255 +493,408 @@ export function BriefingDashboard() {
 
         {/* ── AI Safety Instructions panel ────────────────────────────────── */}
         <div
+          ref={panelRef}
           style={{
             backgroundColor: "var(--bg-card)",
             borderRadius: "var(--border-radius-lg)",
             overflow: "hidden",
+            position: 'relative',
           }}
         >
-          {/* Panel header */}
           <div
-            className="flex items-center justify-between"
-            style={{ padding: "12px 16px" }}
+            className="panel-transition-wrapper visible"
+            style={{
+              opacity: 1,
+              transform: 'translateY(0)',
+            }}
           >
-            <div className="flex items-center gap-2">
-              <Sparkles size={14} style={{ color: "var(--color-info)" }} />
-              <span
-                style={{
+            {/* Panel header */}
+            <div
+              className="flex items-center justify-between"
+              style={{ padding: "12px 16px" }}
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles size={14} style={{ color: "var(--color-info)" }} />
+                <div style={{
                   color: "var(--text-primary)",
                   fontSize: 16,
                   fontWeight: 600,
                   letterSpacing: "1px",
                   textTransform: "uppercase",
                   fontFamily: "Inter, sans-serif",
-                }}
-              >
-                {t("briefing.aiTitle")} — {activeRoleDisplayName}
-              </span>
-            </div>
-            <button
-              className="cursor-pointer flex items-center justify-center"
-              title="Regenerate"
-              style={{
-                width: 30,
-                height: 30,
-                backgroundColor: "var(--bg-button-secondary)",
-                border: "var(--border-chip)",
-                borderRadius: 6,
-                color: "var(--text-secondary)",
-              }}
-            >
-              <RefreshCw size={13} />
-            </button>
-          </div>
-
-          {/* Checklist content */}
-          <div style={{ padding: "0 16px 24px" }}>
-            {/* Weather alert banner */}
-            <div
-              className="flex items-start gap-2"
-              style={{
-                backgroundColor: "var(--color-error-bg)",
-                borderLeft: "3px solid var(--text-alert)",
-                borderRadius: "0 4px 4px 0",
-                padding: "8px 12px",
-                marginBottom: 12,
-              }}
-            >
-              <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "var(--text-alert)" }} />
-              <span style={{ color: "var(--text-alert)", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
-                {t("briefing.weatherAlert")}
-              </span>
-            </div>
-
-            {/* Sections */}
-            {sections.map((section, sIdx) => (
-              <div key={section.label} style={{ marginBottom: sIdx < sections.length - 1 ? 16 : 0 }}>
-                {/* Checklist items */}
-                <div style={{ width: "100%" }}>
-                  {section.items.map((item, iIdx) => (
-                    <div
-                      key={iIdx}
-                      style={{
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 12,
-                        padding: "8px 0",
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <span>{t("briefing.aiTitle")} —</span>
+                  <div style={{ overflow: 'hidden', height: '1.2em', position: 'relative', minWidth: '100px' }}>
+                    <span 
+                      key={activeTab} 
+                      style={{ 
+                        display: 'block',
+                        animation: 'role-name-in 0.25s cubic-bezier(0.34, 1.2, 0.64, 1) forwards'
                       }}
                     >
+                      {activeRoleDisplayName}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <button
+                className="cursor-pointer flex items-center justify-center"
+                title="Regenerate"
+                style={{
+                  width: 30,
+                  height: 30,
+                  backgroundColor: "var(--bg-button-secondary)",
+                  border: "var(--border-chip)",
+                  borderRadius: 6,
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <RefreshCw size={13} />
+              </button>
+            </div>
+
+            {/* Checklist content */}
+            <div style={{ padding: "0 16px 24px" }}>
+              {/* Weather alert banner */}
+              <div
+                className="flex items-start gap-2"
+                style={{
+                  backgroundColor: "var(--color-error-bg)",
+                  borderLeft: "3px solid var(--text-alert)",
+                  borderRadius: "0 4px 4px 0",
+                  padding: "8px 12px",
+                  marginBottom: 12,
+                }}
+              >
+                <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "var(--text-alert)" }} />
+                <span style={{ color: "var(--text-alert)", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+                  {t("briefing.weatherAlert")}
+                </span>
+              </div>
+
+              {/* Sections */}
+              {sections.map((section, sIdx) => (
+                <div key={section.label} style={{ marginBottom: sIdx < sections.length - 1 ? 16 : 0 }}>
+                  {/* Checklist items */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                    {section.items.map((item, iIdx) => (
                       <div
+                        key={iIdx}
                         onClick={() => toggleCheck(sIdx, iIdx)}
-                        className="cursor-pointer flex items-center justify-center"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          backgroundColor: item.checked ? "rgba(var(--color-brand-rgb, 107, 72, 255), 0.05)" : "var(--bg-card)",
+                          border: item.checked ? "2px solid var(--color-brand)" : "2px solid var(--border-checkbox)",
+                          borderRadius: "var(--border-radius-lg)",
+                          overflow: "hidden",
+                          cursor: "pointer",
+                          transform: item.checked ? "scale(1.02) translateY(-4px)" : "scale(1) translateY(0)",
+                          boxShadow: item.checked ? "0 8px 16px rgba(107, 72, 255, 0.15)" : "var(--shadow-card)",
+                          transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!item.checked) e.currentTarget.style.borderColor = "var(--border-active)";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!item.checked) e.currentTarget.style.borderColor = "var(--border-checkbox)";
+                        }}
+                      >
+                        {item.imageUrl && (
+                          <div style={{ 
+                            position: "relative",
+                            aspectRatio: "3 / 2", 
+                            maxHeight: "28vh",
+                            width: "100%", 
+                            overflow: "hidden", 
+                            borderBottom: item.checked ? "1px solid rgba(var(--color-brand-rgb, 107, 72, 255), 0.2)" : "1px solid var(--border-checkbox)",
+                            flexShrink: 0
+                          }}>
+                            <img 
+                              src={item.imageUrl} 
+                              alt="Safety instruction" 
+                              style={{ 
+                                width: "100%", 
+                                height: "100%", 
+                                objectFit: "cover",
+                                objectPosition: "center bottom",
+                                transition: "transform 0.4s ease"
+                              }} 
+                              onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                              onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                            />
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedImage(item.imageUrl || null);
+                              }}
+                              style={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                borderRadius: 4,
+                                padding: 6,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: "white",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                                zIndex: 10,
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.8)"}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.5)"}
+                            >
+                              <Maximize2 size={14} />
+                            </div>
+                          </div>
+                        )}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: 12,
+                            padding: "16px",
+                            flex: 1,
+                          }}
+                        >
+                          <div
+                            className="cursor-pointer flex items-center justify-center transform"
+                            style={{
+                              width: 20,
+                              height: 20,
+                              borderRadius: 4,
+                              border: item.checked ? "none" : "2px solid var(--text-muted)",
+                              backgroundColor: item.checked ? "var(--color-brand)" : "transparent",
+                              marginTop: 0,
+                              flexShrink: 0,
+                              transform: item.checked ? "scale(1.1)" : "scale(1)",
+                              transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease",
+                            }}
+                          >
+                            {item.checked && <Check size={14} color="#FFFFFF" />}
+                          </div>
+                          <div
+                            style={{
+                              flex: 1,
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 12,
+                            }}
+                          >
+                            <span
+                              style={{
+                                color: "var(--text-primary)",
+                                fontSize: 14,
+                                fontWeight: 500,
+                                lineHeight: 1.4,
+                                flex: 1,
+                              }}
+                            >
+                              {itemTextMap[item.text] || item.text}
+                            </span>
+                            
+                            {item.isCustom && (
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span
+                                  style={{
+                                    backgroundColor: "rgba(255,218,138,0.15)",
+                                    border: "var(--border-warning)",
+                                    borderRadius: 4,
+                                    padding: "2px 6px",
+                                    color: "var(--text-warning)",
+                                    fontSize: 10,
+                                    fontWeight: 600,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px",
+                                    whiteSpace: "nowrap",
+                                  }}
+                                >
+                                  {t("briefing.custom")}
+                                </span>
+                                <button
+                                  className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteCustomItem(sIdx, iIdx);
+                                  }}
+                                  style={{
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    padding: 0,
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <X size={14} style={{ color: "var(--text-muted)" }} />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add instruction */}
+                  {addingToSection === sIdx ? (
+                    <div className="flex items-center gap-3" style={{ padding: "6px 0", marginTop: 4 }}>
+                      <div
+                        className="shrink-0 flex items-center justify-center mt-0.5"
                         style={{
                           width: 18,
                           height: 18,
                           borderRadius: 3,
-                          border: item.checked ? "none" : "var(--border-checkbox)",
-                          backgroundColor: item.checked ? "var(--color-brand)" : "transparent",
-                          marginTop: 1.5, // Align with first line of text
-                          flexShrink: 0,
+                          border: "var(--border-checkbox)",
+                          backgroundColor: "transparent",
                         }}
-                      >
-                        {item.checked && <Check size={12} color="#FFFFFF" />}
-                      </div>
-                      <div
+                      />
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={newInstructionText}
+                        onChange={(e) => setNewInstructionText(e.target.value)}
+                        onKeyDown={(e) => handleKeyPress(e, sIdx)}
+                        placeholder={t("briefing.typeSafety")}
                         style={{
                           flex: 1,
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 12,
+                          height: 32,
+                          backgroundColor: "var(--bg-input)",
+                          border: "var(--border-active)",
+                          borderRadius: 4,
+                          padding: "0 12px",
+                          color: "var(--text-primary)",
+                          fontSize: 14,
+                          fontFamily: "Inter, sans-serif",
+                          outline: "none",
+                        }}
+                      />
+                      <button
+                        className="cursor-pointer flex items-center justify-center"
+                        onClick={() => handleConfirmAddingInstruction(sIdx)}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          backgroundColor: "transparent",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: 0,
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      >
+                        <Check size={14} style={{ color: "var(--color-positive)" }} />
+                      </button>
+                      <button
+                        className="cursor-pointer flex items-center justify-center"
+                        onClick={handleCancelAddingInstruction}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          backgroundColor: "transparent",
+                          border: "none",
+                          borderRadius: 4,
+                          padding: 0,
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-alert)");
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-muted)");
                         }}
                       >
-                        <span
-                          style={{
-                            color: "var(--text-primary)",
-                            fontSize: 14,
-                            fontWeight: 400,
-                            lineHeight: 1.5,
-                            flex: 1,
-                          }}
-                        >
-                          {itemTextMap[item.text] || item.text}
-                        </span>
-                        
-                        {item.isCustom && (
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span
-                              style={{
-                                backgroundColor: "rgba(255,218,138,0.15)",
-                                border: "var(--border-warning)",
-                                borderRadius: 4,
-                                padding: "2px 6px",
-                                color: "var(--text-warning)",
-                                fontSize: 10,
-                                fontWeight: 600,
-                                textTransform: "uppercase",
-                                letterSpacing: "0.5px",
-                                whiteSpace: "nowrap",
-                              }}
-                            >
-                              {t("briefing.custom")}
-                            </span>
-                            <button
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteCustomItem(sIdx, iIdx);
-                              }}
-                              style={{
-                                backgroundColor: "transparent",
-                                border: "none",
-                                padding: 0,
-                                display: "flex",
-                                alignItems: "center",
-                              }}
-                            >
-                              <X size={14} style={{ color: "var(--text-muted)" }} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                        <X size={14} style={{ color: "var(--text-muted)" }} />
+                      </button>
                     </div>
-                  ))}
-                </div>
-
-                {/* Add instruction */}
-                {addingToSection === sIdx ? (
-                  <div className="flex items-center gap-3" style={{ padding: "6px 0", marginTop: 4 }}>
-                    <div
-                      className="shrink-0 flex items-center justify-center mt-0.5"
+                  ) : (
+                    <button
+                      className="cursor-pointer"
+                      onClick={() => handleStartAddingInstruction(sIdx)}
                       style={{
-                        width: 18,
-                        height: 18,
-                        borderRadius: 3,
-                        border: "var(--border-checkbox)",
                         backgroundColor: "transparent",
-                      }}
-                    />
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      value={newInstructionText}
-                      onChange={(e) => setNewInstructionText(e.target.value)}
-                      onKeyDown={(e) => handleKeyPress(e, sIdx)}
-                      placeholder={t("briefing.typeSafety")}
-                      style={{
-                        flex: 1,
-                        height: 32,
-                        backgroundColor: "var(--bg-input)",
-                        border: "var(--border-active)",
-                        borderRadius: 4,
-                        padding: "0 12px",
-                        color: "var(--text-primary)",
+                        border: "none",
+                        padding: "6px 0 6px 30px",
+                        color: "var(--color-brand)",
                         fontSize: 14,
+                        fontWeight: 600,
                         fontFamily: "Inter, sans-serif",
-                        outline: "none",
+                        textAlign: "left",
+                        marginTop: 4,
+                        transition: "color 0.2s",
                       }}
-                    />
-                    <button
-                      className="cursor-pointer flex items-center justify-center"
-                      onClick={() => handleConfirmAddingInstruction(sIdx)}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        backgroundColor: "transparent",
-                        border: "none",
-                        borderRadius: 4,
-                        padding: 0,
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-brand-hover)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-brand)")}
                     >
-                      <Check size={14} style={{ color: "var(--color-positive)" }} />
+                      {t("briefing.addInstruction")}
                     </button>
-                    <button
-                      className="cursor-pointer flex items-center justify-center"
-                      onClick={handleCancelAddingInstruction}
-                      style={{
-                        width: 28,
-                        height: 28,
-                        backgroundColor: "transparent",
-                        border: "none",
-                        borderRadius: 4,
-                        padding: 0,
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-alert)");
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-muted)");
-                      }}
-                    >
-                      <X size={14} style={{ color: "var(--text-muted)" }} />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    className="cursor-pointer"
-                    onClick={() => handleStartAddingInstruction(sIdx)}
-                    style={{
-                      backgroundColor: "transparent",
-                      border: "none",
-                      padding: "6px 0 6px 30px",
-                      color: "var(--color-brand)",
-                      fontSize: 14,
-                      fontWeight: 600,
-                      fontFamily: "Inter, sans-serif",
-                      textAlign: "left",
-                      marginTop: 4,
-                      transition: "color 0.2s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-brand-hover)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-brand)")}
-                  >
-                    {t("briefing.addInstruction")}
-                  </button>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Expanded Image Modal */}
+      {expandedImage && (
+        <div 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.85)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 40,
+            cursor: "zoom-out",
+          }}
+          onClick={() => setExpandedImage(null)}
+        >
+          <img 
+            src={expandedImage} 
+            alt="Expanded view" 
+            style={{ 
+              maxWidth: "100%", 
+              maxHeight: "100%", 
+              objectFit: "contain",
+              borderRadius: 8,
+              boxShadow: "0 24px 48px rgba(0,0,0,0.5)"
+            }} 
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: 24,
+              right: 24,
+              backgroundColor: "rgba(255,255,255,0.1)",
+              borderRadius: "50%",
+              padding: 8,
+              color: "white",
+              cursor: "pointer",
+              transition: "background-color 0.2s",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedImage(null);
+            }}
+          >
+            <X size={24} />
+          </div>
+        </div>
+      )}
 
       {/* Sticky footer */}
       <StickyFooter justify="between">
@@ -700,6 +920,22 @@ export function BriefingDashboard() {
           navigate("/safety-videos");
         }}
       />
+
+      <style>{`
+        @keyframes role-name-in {
+          from { transform: translateY(60%); opacity: 0; }
+          to   { transform: translateY(0);   opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .role-card,
+          .instructions-panel,
+          .panel-transition-wrapper,
+          .role-name-label {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

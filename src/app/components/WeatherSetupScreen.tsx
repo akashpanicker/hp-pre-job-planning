@@ -704,26 +704,35 @@ export function WeatherSetupScreen() {
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        height: 135,
-                        backgroundColor: "var(--bg-card)",
+                        height: 180,
+                        backgroundColor: isActive ? "rgba(var(--color-brand-rgb, 107, 72, 255), 0.05)" : "var(--bg-card)",
                         border: isActive
                           ? "2px solid var(--color-brand)"
-                          : "var(--border-default)",
+                          : "2px solid var(--border-default)",
                         borderRadius: "var(--border-radius-lg)",
                         overflow: "hidden",
                         cursor: "pointer",
-                        transition: "border-color 0.15s",
+                        transform: isActive ? "scale(1.05) translateY(-4px)" : "scale(1) translateY(0)",
+                        boxShadow: isActive ? "0 12px 24px rgba(107, 72, 255, 0.15)" : "none",
+                        transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--border-active)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) e.currentTarget.style.borderColor = "var(--border-default)";
                       }}
                     >
                       {/* Illustration area */}
                       <div
                         style={{
-                          height: 100,
+                          flex: 1,
                           position: "relative",
                           overflow: "hidden",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          borderBottom: isActive ? "1px solid rgba(var(--color-brand-rgb, 107, 72, 255), 0.2)" : "1px solid var(--border-default)"
                         }}
                       >
                         <img
@@ -733,24 +742,26 @@ export function WeatherSetupScreen() {
                             width: "100%",
                             height: "100%",
                             objectFit: "cover",
-                            transition: "transform 0.3s ease",
+                            transition: "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
                           }}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.08)"}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
                         />
                         <div
                           style={{
                             position: "absolute",
                             inset: 0,
-                            background: isActive ? "transparent" : "rgba(0,0,0,0.1)",
-                            transition: "background 0.2s",
+                            background: isActive ? "transparent" : "rgba(0,0,0,0.15)",
+                            transition: "background 0.3s",
+                            pointerEvents: "none",
                           }}
                         />
                       </div>
                       {/* Label */}
                       <div
                         style={{
-                          padding: "6px 8px",
-                          backgroundColor: "var(--bg-card)",
-                          borderTop: isActive ? "1px solid var(--color-brand)" : "var(--border-default)",
+                          padding: "10px 8px",
+                          backgroundColor: "transparent",
                         }}
                       >
                         <span
