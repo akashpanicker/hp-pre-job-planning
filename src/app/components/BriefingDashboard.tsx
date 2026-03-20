@@ -7,11 +7,9 @@ import {
   Printer,
   ClipboardCheck,
   Eye,
-  Clock,
   Check,
   ArrowLeft,
   X,
-  Plus,
 } from "lucide-react";
 import { StickyFooter, FooterButton } from "./StickyFooter";
 import { Header } from "./Header";
@@ -108,6 +106,15 @@ const derrickmanSections: Section[] = [
   },
 ];
 
+// ─── Role card data (color placeholders for images) ───────────────────────────
+const ROLE_CARDS: Array<{ role: Role; displayName: string; gradient: string }> = [
+  { role: "DRILLER",    displayName: "Driller",     gradient: "linear-gradient(135deg, #0D1F3C 0%, #1A3A6A 100%)" },
+  { role: "FLOORMAN 1", displayName: "Floorman",    gradient: "linear-gradient(135deg, #7B3D0A 0%, #C05621 100%)" },
+  { role: "FLOORMAN 2", displayName: "Floorman 2",  gradient: "linear-gradient(135deg, #1A3D2B 0%, #2F6A4A 100%)" },
+  { role: "PIT HAND",   displayName: "Pit Hand",    gradient: "linear-gradient(135deg, #6B1D1D 0%, #A63232 100%)" },
+  { role: "DERRICKMAN", displayName: "Derrickmen",  gradient: "linear-gradient(135deg, #1A2744 0%, #2C4A82 100%)" },
+];
+
 interface RoleStatus {
   role: Role;
   status: "reviewed" | "not-reviewed";
@@ -118,7 +125,6 @@ export function BriefingDashboard() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<Role>("DRILLER");
   const [sections, setSections] = useState<Section[]>(drillerSections);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [addingToSection, setAddingToSection] = useState<number | null>(null);
   const [newInstructionText, setNewInstructionText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -126,24 +132,18 @@ export function BriefingDashboard() {
 
   // Store checklist data for all roles
   const [roleSections, setRoleSections] = useState<Record<Role, Section[]>>({
-    "DRILLER": drillerSections,
-    "FLOORMAN 1": floorman1Sections,
-    "FLOORMAN 2": floorman2Sections,
-    "PIT HAND": pitHandSections,
-    "DERRICKMAN": derrickmanSections,
+    "DRILLER":     drillerSections,
+    "FLOORMAN 1":  floorman1Sections,
+    "FLOORMAN 2":  floorman2Sections,
+    "PIT HAND":    pitHandSections,
+    "DERRICKMAN":  derrickmanSections,
   });
 
-  // Update sections when active tab changes
   useEffect(() => {
     setSections(roleSections[activeTab]);
   }, [activeTab, roleSections]);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
-  // Auto-focus input when adding instruction
   useEffect(() => {
     if (addingToSection !== null && inputRef.current) {
       inputRef.current.focus();
@@ -155,12 +155,7 @@ export function BriefingDashboard() {
       ...prev,
       [activeTab]: prev[activeTab].map((s, si) =>
         si === sectionIdx
-          ? {
-              ...s,
-              items: s.items.map((item, ii) =>
-                ii === itemIdx ? { ...item, checked: !item.checked } : item
-              ),
-            }
+          ? { ...s, items: s.items.map((item, ii) => ii === itemIdx ? { ...item, checked: !item.checked } : item) }
           : s
       ),
     }));
@@ -182,10 +177,7 @@ export function BriefingDashboard() {
         ...prev,
         [activeTab]: prev[activeTab].map((s, si) =>
           si === sectionIdx
-            ? {
-                ...s,
-                items: [...s.items, { text: newInstructionText.trim(), checked: true, isCustom: true }],
-              }
+            ? { ...s, items: [...s.items, { text: newInstructionText.trim(), checked: true, isCustom: true }] }
             : s
         ),
       }));
@@ -199,10 +191,7 @@ export function BriefingDashboard() {
       ...prev,
       [activeTab]: prev[activeTab].map((s, si) =>
         si === sectionIdx
-          ? {
-              ...s,
-              items: s.items.filter((_, ii) => ii !== itemIdx),
-            }
+          ? { ...s, items: s.items.filter((_, ii) => ii !== itemIdx) }
           : s
       ),
     }));
@@ -215,60 +204,20 @@ export function BriefingDashboard() {
     }
   };
 
-  // Calculate status for a role based on its checklist progress
   const calculateRoleStatus = (role: Role): "reviewed" | "not-reviewed" => {
-    const sections = roleSections[role];
-    const allItems = sections.flatMap(s => s.items);
-    const checkedCount = allItems.filter(item => item.checked).length;
-
-    // If at least 1 item is checked, status is "reviewed"
-    return checkedCount >= 1 ? "reviewed" : "not-reviewed";
+    const sects = roleSections[role];
+    const allItems = sects.flatMap((s) => s.items);
+    return allItems.filter((item) => item.checked).length >= 1 ? "reviewed" : "not-reviewed";
   };
 
-  // Generate role statuses dynamically
-  const roleStatuses: RoleStatus[] = roles.map(role => ({
+  const roleStatuses: RoleStatus[] = roles.map((role) => ({
     role,
     status: calculateRoleStatus(role),
   }));
 
-  // Calculate progress bar completion
-  const roleProgress = roleStatuses.map(rs => rs.status === "reviewed");
-
-  // Calculate briefing completion stats
-  const completedRoles = roleStatuses.filter(rs => rs.status === "reviewed").length;
-  const totalRoles = roles.length;
-
-  const formatTime = (d: Date) => {
-    let hours = d.getHours();
-    const ampm = hours >= 12 ? "PM" : "AM";
-    hours = hours % 12 || 12;
-    const mins = d.getMinutes().toString().padStart(2, "0");
-    const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    return `${hours.toString().padStart(2, "0")}:${mins} ${ampm} — ${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "reviewed":
-        return { text: t("briefing.reviewed"), color: "var(--text-reviewed)" };
-      case "not-reviewed":
-        return { text: t("briefing.notReviewed"), color: "var(--text-not-reviewed)" };
-      default:
-        return { text: t("briefing.notReviewed"), color: "var(--text-not-reviewed)" };
-    }
-  };
-
-  // Translation map for section labels
-  const sectionLabelMap: Record<string, string> = {
-    "PERSONAL PROTECTIVE EQUIPMENT": t("briefing.ppe"),
-    "PRE-SHIFT CHECKS": t("briefing.preShift"),
-    "EMERGENCY PROCEDURES": t("briefing.emergency"),
-  };
 
   // Translation map for checklist items
   const itemTextMap: Record<string, string> = {
-    // Old PPE/Pre-shift/Emergency items (keeping for backwards compatibility)
     "Steel-toed boots with slip-resistant soles — mandatory (wet conditions)": t("briefing.ppe1"),
     "Hard hat with chin strap fastened": t("briefing.ppe2"),
     "High-visibility rain gear — required due to precipitation": t("briefing.ppe3"),
@@ -280,39 +229,29 @@ export function BriefingDashboard() {
     "Review muster point — confirm accessible in current visibility": t("briefing.em1"),
     "Confirm radio channel and backup comms": t("briefing.em2"),
     "Identify nearest sheltered evacuation route": t("briefing.em3"),
-    
-    // Driller items
     "Confirm BOP test completed before spudding operations": t("briefing.driller1"),
     "Verify weight indicator and deadline anchor are calibrated": t("briefing.driller2"),
     "Monitor hook load limits — do not exceed rated capacity": t("briefing.driller3"),
     "Confirm top drive torque settings for today's pipe size": t("briefing.driller4"),
     "Check driller's console emergency stop is functional": t("briefing.driller5"),
-    
-    // Floorman 1 items
     "Inspect all tongs and dies before making connections": t("briefing.floorman1_1"),
     "Confirm stabbing board is secured before running casing": t("briefing.floorman1_2"),
     "Wear cut-resistant gloves during all pipe handling": t("briefing.floorman1_3"),
     "Verify floor safety gates are latched before rotary is engaged": t("briefing.floorman1_4"),
     "Keep clear of the rotary table during drilling operations": t("briefing.floorman1_5"),
     "Check cat line and tugger line for wear before use": t("briefing.floorman1_6"),
-    
-    // Floorman 2 items
     "Confirm iron roughneck is properly aligned before each connection": t("briefing.floorman2_1"),
     "Inspect spinning chain condition and replace if worn": t("briefing.floorman2_2"),
     "Keep personnel clear of the V-door during pipe pickup": t("briefing.floorman2_3"),
     "Verify all hand tools are secured and inventoried": t("briefing.floorman2_4"),
     "Report any dropped objects immediately to the Driller": t("briefing.floorman2_5"),
     "Confirm drill line slip-and-cut schedule is up to date": t("briefing.floorman2_6"),
-    
-    // Pit Hand items
     "Check all pit levels and record baseline readings": t("briefing.pithand1"),
     "Monitor mud weight and viscosity every 30 minutes": t("briefing.pithand2"),
     "Inspect shaker screens for damage before circulating": t("briefing.pithand3"),
     "Confirm chemical inventory levels — flag any low stock": t("briefing.pithand4"),
     "Verify trip tank is zeroed and functional before tripping": t("briefing.pithand5"),
     "Check all agitators and degasser are running correctly": t("briefing.pithand6"),
-    
-    // Derrickman items
     "Inspect elevator links and bails before tripping operations": t("briefing.derrickman1"),
     "Confirm monkey board safety latch is engaged": t("briefing.derrickman2"),
     "Verify derrick lights are operational for low-visibility conditions": t("briefing.derrickman3"),
@@ -320,6 +259,10 @@ export function BriefingDashboard() {
     "Inspect traveling block and crown-o-matic settings": t("briefing.derrickman5"),
     "Confirm escape line and derrick safety harness are in good condition": t("briefing.derrickman6"),
   };
+
+  // Active role display name
+  const activeRoleCard = ROLE_CARDS.find((rc) => rc.role === activeTab);
+  const activeRoleDisplayName = activeRoleCard?.displayName.toUpperCase() ?? activeTab;
 
   return (
     <div
@@ -331,12 +274,13 @@ export function BriefingDashboard() {
 
       {/* Context bar */}
       <div
-        className="flex items-center gap-2 px-6 shrink-0 flex-wrap"
+        className="flex items-center gap-2 flex-wrap"
         style={{
           backgroundColor: "var(--bg-context-bar)",
           borderBottom: "var(--border-default)",
           padding: "10px 24px",
           minHeight: 42,
+          flexShrink: 0,
         }}
       >
         <Chip text="RIG 145" />
@@ -372,407 +316,377 @@ export function BriefingDashboard() {
           {t("briefing.visibility")}
         </span>
         <div className="flex-1" />
-        
       </div>
 
-      {/* Main content */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left role navigation panel */}
+      {/* Main content — full width, no sidebar */}
+      <div className="flex-1 overflow-y-auto" style={{ padding: "20px 24px" }}>
+
+        {/* ── Horizontal role cards strip ─────────────────────────────────── */}
         <div
           style={{
-            width: 200,
-            backgroundColor: "var(--bg-sidebar)",
-            borderRight: "var(--border-default)",
+            display: "flex",
+            gap: 16,
+            paddingBottom: 16,
+          }}
+        >
+          {ROLE_CARDS.map((rc) => {
+            const isActive = activeTab === rc.role;
+            const roleStatus = roleStatuses.find((rs) => rs.role === rc.role);
+            const isReviewed = roleStatus?.status === "reviewed";
+            return (
+              <div
+                key={rc.role}
+                onClick={() => setActiveTab(rc.role)}
+                style={{
+                  flex: 1,
+                  height: 90,
+                  display: "flex",
+                  backgroundColor: "var(--bg-card)",
+                  border: isActive
+                    ? "2px solid var(--color-brand)"
+                    : "var(--border-card)",
+                  borderRadius: "var(--border-radius-lg)",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  transition: "border-color 0.15s",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-card)";
+                }}
+              >
+                {/* Image placeholder */}
+                <div
+                  style={{
+                    width: 90,
+                    height: 90,
+                    flexShrink: 0,
+                    background: rc.gradient,
+                    borderRadius: "var(--border-radius-lg) 0 0 var(--border-radius-lg)",
+                  }}
+                />
+                {/* Text */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    padding: "0 14px",
+                    flex: 1,
+                    minWidth: 0,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: isActive ? "var(--color-brand)" : "var(--text-secondary)",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      fontFamily: "Inter, sans-serif",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {rc.displayName}
+                  </span>
+                  <span
+                    style={{
+                      color: isReviewed ? "var(--text-reviewed)" : "var(--text-tertiary)",
+                      fontWeight: 400,
+                      fontSize: 13,
+                      fontFamily: "Inter, sans-serif",
+                      marginTop: 2,
+                    }}
+                  >
+                    {isReviewed ? t("briefing.reviewed") : "Info"}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── AI Safety Instructions panel ────────────────────────────────── */}
+        <div
+          style={{
+            backgroundColor: "var(--bg-card)",
+            borderRadius: "var(--border-radius-lg)",
+            overflow: "hidden",
           }}
         >
           {/* Panel header */}
           <div
-            style={{
-              padding: "12px 16px",
-              borderBottom: "var(--border-default)",
-            }}
+            className="flex items-center justify-between"
+            style={{ padding: "12px 16px" }}
           >
-            <span
-              style={{
-                color: "var(--text-tertiary)",
-                fontSize: 14,
-                fontWeight: 600,
-                letterSpacing: "1px",
-                textTransform: "uppercase",
-              }}
-            >
-              {t("briefing.roles")}
-            </span>
-          </div>
-
-          {/* Role list */}
-          <div>
-            {roleStatuses.map((roleItem) => {
-              const isActive = activeTab === roleItem.role;
-              const statusInfo = getStatusLabel(roleItem.status);
-              return (
-                <button
-                  key={roleItem.role}
-                  onClick={() => setActiveTab(roleItem.role)}
-                  className="w-full cursor-pointer"
-                  style={{
-                    height: 48,
-                    padding: "0 16px",
-                    borderLeft: `3px solid ${isActive ? "var(--color-brand)" : "transparent"}`,
-                    backgroundColor: isActive ? "var(--bg-active)" : "transparent",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "flex-start",
-                    textAlign: "left",
-                    border: "none",
-                    transition: "background-color 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.backgroundColor = "var(--bg-hover)";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <span
-                    style={{
-                      color: isActive ? "var(--text-role-active)" : "var(--text-role-inactive)",
-                      fontSize: 14,
-                      fontWeight: isActive ? 600 : 400,
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {roleItem.role}
-                  </span>
-                  <span
-                    style={{
-                      color: statusInfo.color,
-                      fontSize: 12,
-                      fontWeight: 400,
-                      marginTop: 2,
-                    }}
-                  >
-                    {statusInfo.text}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Main AI instructions area */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-          {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto" style={{ padding: "20px 24px" }}>
-            {/* Briefing progress bar - moved to top */}
-            
-
-            {/* AI Safety Instructions */}
-            <div
-              style={{
-                backgroundColor: "var(--bg-card)",
-                borderRadius: 8,
-                overflow: "hidden",
-              }}
-            >
-              {/* Card header */}
-              <div
-                className="flex items-center justify-between"
-                style={{ padding: "12px 16px" }}
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} style={{ color: "var(--color-info)" }} />
+              <span
+                style={{
+                  color: "var(--text-primary)",
+                  fontSize: 16,
+                  fontWeight: 600,
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                  fontFamily: "Inter, sans-serif",
+                }}
               >
-                <div className="flex items-center gap-2">
-                  <Sparkles size={14} style={{ color: "var(--color-info)" }} />
-                  <span
-                    style={{
-                      color: "var(--text-primary)",
-                      fontSize: 16,
-                      fontWeight: 600,
-                      letterSpacing: "1px",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {t("briefing.aiTitle")}
-                  </span>
-                </div>
-                <button
-                  className="cursor-pointer flex items-center justify-center"
-                  title="Regenerate"
-                  style={{
-                    width: 30,
-                    height: 30,
-                    backgroundColor: "var(--bg-button-secondary)",
-                    border: "var(--border-chip)",
-                    borderRadius: 6,
-                    color: "var(--text-secondary)",
-                  }}
-                >
-                  <RefreshCw size={13} />
-                </button>
-              </div>
+                {t("briefing.aiTitle")} — {activeRoleDisplayName}
+              </span>
+            </div>
+            <button
+              className="cursor-pointer flex items-center justify-center"
+              title="Regenerate"
+              style={{
+                width: 30,
+                height: 30,
+                backgroundColor: "var(--bg-button-secondary)",
+                border: "var(--border-chip)",
+                borderRadius: 6,
+                color: "var(--text-secondary)",
+              }}
+            >
+              <RefreshCw size={13} />
+            </button>
+          </div>
 
-              {/* Tab content */}
-              <div style={{ paddingTop: 0, paddingRight: 16, paddingBottom: 24, paddingLeft: 16 }}>
-                {/* Weather alert banner */}
-                <div
-                  className="flex items-start gap-2"
-                  style={{
-                    backgroundColor: "var(--color-error-bg)",
-                    borderLeft: "3px solid var(--text-alert)",
-                    borderRadius: "0 4px 4px 0",
-                    padding: "8px 12px",
-                    marginBottom: 12,
-                  }}
-                >
-                  <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "var(--text-alert)" }} />
-                  <span style={{ color: "var(--text-alert)", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
-                    {t("briefing.weatherAlert")}
-                  </span>
-                </div>
+          {/* Checklist content */}
+          <div style={{ padding: "0 16px 24px" }}>
+            {/* Weather alert banner */}
+            <div
+              className="flex items-start gap-2"
+              style={{
+                backgroundColor: "var(--color-error-bg)",
+                borderLeft: "3px solid var(--text-alert)",
+                borderRadius: "0 4px 4px 0",
+                padding: "8px 12px",
+                marginBottom: 12,
+              }}
+            >
+              <CloudRain size={14} className="shrink-0 mt-0.5" style={{ color: "var(--text-alert)" }} />
+              <span style={{ color: "var(--text-alert)", fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
+                {t("briefing.weatherAlert")}
+              </span>
+            </div>
 
-                {/* Sections */}
-                {sections.map((section, sIdx) => {
-                  const checkedCount = section.items.filter((i) => i.checked).length;
-                  const total = section.items.length;
-                  const allDone = checkedCount === total;
-                  return (
-                    <div key={section.label} style={{ marginBottom: sIdx < sections.length - 1 ? 16 : 0 }}>
-                      <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
-                        <div className="flex items-center gap-2">
-                          {section.icon}
-                          <span
-                            style={{
-                              color: "var(--text-tertiary)",
-                              fontSize: 14,
-                              fontWeight: 600,
-                              letterSpacing: "1px",
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {sectionLabelMap[section.label] || section.label}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {/* Checklist items table */}
-                      <div style={{ display: "table", width: "100%", borderSpacing: "0" }}>
-                        {section.items.map((item, iIdx) => (
-                          <div
-                            key={iIdx}
-                            style={{ display: "table-row" }}
-                          >
-                            <div
-                              style={{
-                                display: "table-cell",
-                                width: 18,
-                                paddingRight: 12,
-                                paddingTop: 6,
-                                paddingBottom: 6,
-                                verticalAlign: "top",
-                              }}
-                            >
-                              <div
-                                onClick={() => toggleCheck(sIdx, iIdx)}
-                                className="cursor-pointer flex items-center justify-center"
-                                style={{
-                                  width: 18,
-                                  height: 18,
-                                  borderRadius: 3,
-                                  border: item.checked ? "none" : `var(--border-checkbox)`,
-                                  backgroundColor: item.checked ? "var(--color-brand)" : "transparent",
-                                  marginTop: 2,
-                                }}
-                              >
-                                {item.checked && <Check size={12} color="#FFFFFF" />}
-                              </div>
-                            </div>
-                            <div
-                              style={{
-                                display: "table-cell",
-                                paddingTop: 6,
-                                paddingBottom: 6,
-                                verticalAlign: "top",
-                                width: "auto",
-                              }}
-                            >
-                              <span
-                                style={{
-                                  color: "var(--text-primary)",
-                                  fontSize: 14,
-                                  fontWeight: 400,
-                                  lineHeight: 1.5,
-                                }}
-                              >
-                                {itemTextMap[item.text] || item.text}
-                              </span>
-                            </div>
-                            {item.isCustom && (
-                              <>
-                                <div
-                                  style={{
-                                    display: "table-cell",
-                                    width: 70,
-                                    paddingTop: 6,
-                                    paddingBottom: 6,
-                                    paddingLeft: 12,
-                                    verticalAlign: "top",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      backgroundColor: "rgba(255,218,138,0.15)",
-                                      border: "var(--border-warning)",
-                                      borderRadius: 4,
-                                      padding: "2px 6px",
-                                      color: "var(--text-warning)",
-                                      fontSize: 10,
-                                      fontWeight: 600,
-                                      textTransform: "uppercase",
-                                      letterSpacing: "0.5px",
-                                      whiteSpace: "nowrap",
-                                      display: "inline-block",
-                                    }}
-                                  >
-                                    {t("briefing.custom")}
-                                  </span>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "table-cell",
-                                    width: 20,
-                                    paddingTop: 6,
-                                    paddingBottom: 6,
-                                    paddingLeft: 8,
-                                    verticalAlign: "top",
-                                  }}
-                                >
-                                  <button
-                                    className="cursor-pointer"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleDeleteCustomItem(sIdx, iIdx);
-                                    }}
-                                    style={{
-                                      backgroundColor: "transparent",
-                                      border: "none",
-                                      padding: 0,
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      const svg = e.currentTarget.querySelector("svg");
-                                      if (svg) svg.setAttribute("stroke", "var(--text-alert)");
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      const svg = e.currentTarget.querySelector("svg");
-                                      if (svg) svg.setAttribute("stroke", "var(--text-muted)");
-                                    }}
-                                  >
-                                    <X size={14} style={{ color: "var(--text-muted)" }} />
-                                  </button>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Add instruction button or input */}
-                      {addingToSection === sIdx ? (
-                        <div className="flex items-center gap-3" style={{ padding: "6px 0", marginTop: 4 }}>
-                          <div
-                            className="shrink-0 flex items-center justify-center mt-0.5"
-                            style={{
-                              width: 18,
-                              height: 18,
-                              borderRadius: 3,
-                              border: "var(--border-checkbox)",
-                              backgroundColor: "transparent",
-                            }}
-                          />
-                          <input
-                            ref={inputRef}
-                            type="text"
-                            value={newInstructionText}
-                            onChange={(e) => setNewInstructionText(e.target.value)}
-                            onKeyPress={(e) => handleKeyPress(e, sIdx)}
-                            placeholder={t("briefing.typeSafety")}
-                            style={{
-                              flex: 1,
-                              height: 32,
-                              backgroundColor: "var(--bg-input)",
-                              border: "var(--border-active)",
-                              borderRadius: 4,
-                              padding: "0 12px",
-                              color: "var(--text-primary)",
-                              fontSize: 14,
-                              fontFamily: "Inter, sans-serif",
-                              outline: "none",
-                            }}
-                          />
-                          <button
-                            className="cursor-pointer flex items-center justify-center"
-                            onClick={() => handleConfirmAddingInstruction(sIdx)}
-                            style={{
-                              width: 28,
-                              height: 28,
-                              backgroundColor: "transparent",
-                              border: "none",
-                              borderRadius: 4,
-                              padding: 0,
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                          >
-                            <Check size={14} style={{ color: "var(--color-positive)" }} />
-                          </button>
-                          <button
-                            className="cursor-pointer flex items-center justify-center"
-                            onClick={handleCancelAddingInstruction}
-                            style={{
-                              width: 28,
-                              height: 28,
-                              backgroundColor: "transparent",
-                              border: "none",
-                              borderRadius: 4,
-                              padding: 0,
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-alert)");
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-muted)");
-                            }}
-                          >
-                            <X size={14} style={{ color: "var(--text-muted)" }} />
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          className="cursor-pointer"
-                          onClick={() => handleStartAddingInstruction(sIdx)}
+            {/* Sections */}
+            {sections.map((section, sIdx) => (
+              <div key={section.label} style={{ marginBottom: sIdx < sections.length - 1 ? 16 : 0 }}>
+                {/* Checklist items */}
+                <div style={{ display: "table", width: "100%", borderSpacing: "0" }}>
+                  {section.items.map((item, iIdx) => (
+                    <div key={iIdx} style={{ display: "table-row" }}>
+                      <div
+                        style={{
+                          display: "table-cell",
+                          width: 18,
+                          paddingRight: 12,
+                          paddingTop: 6,
+                          paddingBottom: 6,
+                          verticalAlign: "top",
+                        }}
+                      >
+                        <div
+                          onClick={() => toggleCheck(sIdx, iIdx)}
+                          className="cursor-pointer flex items-center justify-center"
                           style={{
-                            backgroundColor: "transparent",
-                            border: "none",
-                            padding: "6px 0 6px 30px",
-                            color: "var(--text-tertiary)",
+                            width: 18,
+                            height: 18,
+                            borderRadius: 3,
+                            border: item.checked ? "none" : "var(--border-checkbox)",
+                            backgroundColor: item.checked ? "var(--color-brand)" : "transparent",
+                            marginTop: 2,
+                          }}
+                        >
+                          {item.checked && <Check size={12} color="#FFFFFF" />}
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "table-cell",
+                          paddingTop: 6,
+                          paddingBottom: 6,
+                          verticalAlign: "top",
+                          width: "auto",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "var(--text-primary)",
                             fontSize: 14,
                             fontWeight: 400,
-                            fontFamily: "Inter, sans-serif",
-                            textAlign: "left",
-                            marginTop: 4,
+                            lineHeight: 1.5,
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
                         >
-                          {t("briefing.addInstruction")}
-                        </button>
+                          {itemTextMap[item.text] || item.text}
+                        </span>
+                      </div>
+                      {item.isCustom && (
+                        <>
+                          <div
+                            style={{
+                              display: "table-cell",
+                              width: 70,
+                              paddingTop: 6,
+                              paddingBottom: 6,
+                              paddingLeft: 12,
+                              verticalAlign: "top",
+                            }}
+                          >
+                            <span
+                              style={{
+                                backgroundColor: "rgba(255,218,138,0.15)",
+                                border: "var(--border-warning)",
+                                borderRadius: 4,
+                                padding: "2px 6px",
+                                color: "var(--text-warning)",
+                                fontSize: 10,
+                                fontWeight: 600,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.5px",
+                                whiteSpace: "nowrap",
+                                display: "inline-block",
+                              }}
+                            >
+                              {t("briefing.custom")}
+                            </span>
+                          </div>
+                          <div
+                            style={{
+                              display: "table-cell",
+                              width: 20,
+                              paddingTop: 6,
+                              paddingBottom: 6,
+                              paddingLeft: 8,
+                              verticalAlign: "top",
+                            }}
+                          >
+                            <button
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteCustomItem(sIdx, iIdx);
+                              }}
+                              style={{
+                                backgroundColor: "transparent",
+                                border: "none",
+                                padding: 0,
+                                display: "flex",
+                                alignItems: "center",
+                              }}
+                              onMouseEnter={(e) => {
+                                const svg = e.currentTarget.querySelector("svg");
+                                if (svg) svg.setAttribute("stroke", "var(--text-alert)");
+                              }}
+                              onMouseLeave={(e) => {
+                                const svg = e.currentTarget.querySelector("svg");
+                                if (svg) svg.setAttribute("stroke", "var(--text-muted)");
+                              }}
+                            >
+                              <X size={14} style={{ color: "var(--text-muted)" }} />
+                            </button>
+                          </div>
+                        </>
                       )}
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+
+                {/* Add instruction */}
+                {addingToSection === sIdx ? (
+                  <div className="flex items-center gap-3" style={{ padding: "6px 0", marginTop: 4 }}>
+                    <div
+                      className="shrink-0 flex items-center justify-center mt-0.5"
+                      style={{
+                        width: 18,
+                        height: 18,
+                        borderRadius: 3,
+                        border: "var(--border-checkbox)",
+                        backgroundColor: "transparent",
+                      }}
+                    />
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={newInstructionText}
+                      onChange={(e) => setNewInstructionText(e.target.value)}
+                      onKeyDown={(e) => handleKeyPress(e, sIdx)}
+                      placeholder={t("briefing.typeSafety")}
+                      style={{
+                        flex: 1,
+                        height: 32,
+                        backgroundColor: "var(--bg-input)",
+                        border: "var(--border-active)",
+                        borderRadius: 4,
+                        padding: "0 12px",
+                        color: "var(--text-primary)",
+                        fontSize: 14,
+                        fontFamily: "Inter, sans-serif",
+                        outline: "none",
+                      }}
+                    />
+                    <button
+                      className="cursor-pointer flex items-center justify-center"
+                      onClick={() => handleConfirmAddingInstruction(sIdx)}
+                      style={{
+                        width: 28,
+                        height: 28,
+                        backgroundColor: "transparent",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: 0,
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-hover)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                    >
+                      <Check size={14} style={{ color: "var(--color-positive)" }} />
+                    </button>
+                    <button
+                      className="cursor-pointer flex items-center justify-center"
+                      onClick={handleCancelAddingInstruction}
+                      style={{
+                        width: 28,
+                        height: 28,
+                        backgroundColor: "transparent",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: 0,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-alert)");
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.querySelector("svg")?.setAttribute("stroke", "var(--text-muted)");
+                      }}
+                    >
+                      <X size={14} style={{ color: "var(--text-muted)" }} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => handleStartAddingInstruction(sIdx)}
+                    style={{
+                      backgroundColor: "transparent",
+                      border: "none",
+                      padding: "6px 0 6px 30px",
+                      color: "var(--text-tertiary)",
+                      fontSize: 14,
+                      fontWeight: 400,
+                      fontFamily: "Inter, sans-serif",
+                      textAlign: "left",
+                      marginTop: 4,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-tertiary)")}
+                  >
+                    {t("briefing.addInstruction")}
+                  </button>
+                )}
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
