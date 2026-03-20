@@ -89,7 +89,7 @@
   --bg-context-bar:       var(--raw-dark-surface-2);   /* #121A28 */
   --bg-card:              var(--raw-dark-surface-3);   /* #182235 */
   --bg-sidebar:           var(--raw-dark-surface-2);   /* #121A28 */
-  --bg-input:             var(--raw-dark-surface-1);   /* #0E141F */
+  --bg-input:             var(--raw-dark-surface-2);   /* #121A28 */
   --bg-hover:             var(--raw-dark-surface-4);   /* #1F2B42 */
   --bg-active:            var(--raw-dark-surface-4);   /* #1F2B42 */
   --bg-bottom-bar:        var(--raw-dark-surface-2);   /* #121A28 */
@@ -116,7 +116,7 @@
   --border-subtle:        1px solid var(--raw-dark-surface-3);
   --border-active:        1px solid var(--raw-primary);
   --border-chip:          1px solid var(--raw-dark-surface-5);
-  --border-input:         1px solid var(--raw-dark-surface-4);
+  --border-input:         1px solid var(--raw-dark-surface-5);
   --border-card:          1px solid var(--raw-dark-surface-4);
   --border-sidebar:       1px solid var(--raw-dark-surface-4);
   --border-checkbox:      1px solid var(--raw-dark-surface-5);
@@ -188,7 +188,7 @@
   --border-subtle:        1px solid var(--raw-light-surface-3);  /* #CDD8EE */
   --border-active:        1px solid var(--raw-primary);
   --border-chip:          1px solid var(--raw-light-surface-5);  /* #A6B6D8 */
-  --border-input:         1px solid var(--raw-light-surface-3);  /* #CDD8EE */
+  --border-input:         1px solid var(--raw-light-surface-5);  /* #A6B6D8 */
   --border-card:          1px solid var(--raw-light-surface-3);  /* #CDD8EE */
   --border-sidebar:       1px solid var(--raw-light-surface-3);  /* #CDD8EE */
   --border-checkbox:      1px solid var(--raw-light-surface-5);  /* #A6B6D8 */

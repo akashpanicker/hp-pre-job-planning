@@ -43,7 +43,8 @@ function parseVoiceInput(text: string): ParsedVoiceData {
   else if (t.includes("wet surface") || t.includes("wet floor"))    result.siteCondition = "wet-surfaces";
   else if (t.includes("dust") || t.includes("dusty"))               result.siteCondition = "high-dust";
   else if (t.includes("equipment maintenance"))                      result.siteCondition = "scaffolding";
-  else if (t.includes("maintenance"))                                result.siteCondition = "maintenance";
+  else if (t.includes("maintenance"))                                result.siteCondition = "restricted-access";
+  else if (t.includes("restricted") || t.includes("access zone"))    result.siteCondition = "restricted-access";
   else if (t.includes("normal") || t.includes("standard"))          result.siteCondition = "normal";
 
   // Input plan
@@ -69,7 +70,7 @@ function buildFillSummary(data: ParsedVoiceData): string {
   const condLabels: Record<string, string> = {
     "normal": "Normal", "wet-surfaces": "Wet Surface", "muddy": "Muddy",
     "icy": "Icy", "high-dust": "High Dust", "scaffolding": "Equipment Maintenance Ongoing",
-    "maintenance": "Maintenance",
+    "restricted-access": "Restricted Access Zone Active",
   };
   const planLabels: Record<string, string> = {
     "plan-1": 'Run 9-5/8" casing to 8,450 ft TD',
@@ -325,108 +326,17 @@ interface SiteCondCard {
   value: string;
   label: string;
   gradient: string;
-  illustration: React.ReactNode;
+  image: string;
 }
 
-const NormalIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <circle cx="26" cy="26" r="10" fill="rgba(255,220,100,0.9)" />
-    {[0,45,90,135,180,225,270,315].map((angle, i) => {
-      const rad = (angle * Math.PI) / 180;
-      const x1 = 26 + 13 * Math.cos(rad); const y1 = 26 + 13 * Math.sin(rad);
-      const x2 = 26 + 18 * Math.cos(rad); const y2 = 26 + 18 * Math.sin(rad);
-      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(255,220,100,0.9)" strokeWidth="2.5" strokeLinecap="round" />;
-    })}
-  </svg>
-);
-
-const WetSurfaceIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    {[12,20,28,36].map((x, i) => (
-      <g key={i}>
-        <path d={`M${x} 8 Q${x-3} 16 ${x} 20 Q${x+3} 16 ${x} 8`} fill="rgba(100,180,255,0.85)" />
-        <path d={`M${x+4} 20 Q${x+1} 28 ${x+4} 32 Q${x+7} 28 ${x+4} 20`} fill="rgba(100,180,255,0.7)" />
-      </g>
-    ))}
-    <path d="M8 40 Q18 36 26 40 Q34 44 44 40" stroke="rgba(100,180,255,0.6)" strokeWidth="2" strokeLinecap="round" fill="none" />
-    <path d="M8 45 Q18 41 26 45 Q34 49 44 45" stroke="rgba(100,180,255,0.4)" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-  </svg>
-);
-
-const MuddyIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <ellipse cx="26" cy="36" rx="18" ry="8" fill="rgba(139,90,43,0.7)" />
-    <ellipse cx="20" cy="30" rx="10" ry="5" fill="rgba(160,110,60,0.8)" />
-    <ellipse cx="32" cy="28" rx="8" ry="4" fill="rgba(120,75,30,0.8)" />
-    <circle cx="18" cy="22" r="4" fill="rgba(139,90,43,0.65)" />
-    <circle cx="30" cy="20" r="3" fill="rgba(160,110,60,0.6)" />
-    <circle cx="36" cy="25" r="2.5" fill="rgba(120,75,30,0.6)" />
-  </svg>
-);
-
-const IcyIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <line x1="26" y1="8" x2="26" y2="44" stroke="rgba(180,230,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="8" y1="26" x2="44" y2="26" stroke="rgba(180,230,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="14" y1="14" x2="38" y2="38" stroke="rgba(180,230,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="38" y1="14" x2="14" y2="38" stroke="rgba(180,230,255,0.9)" strokeWidth="2" strokeLinecap="round" />
-    {[0,60,120,180,240,300].map((a, i) => {
-      const r = (a * Math.PI) / 180;
-      const bx = 26 + 10 * Math.cos(r); const by = 26 + 10 * Math.sin(r);
-      return <circle key={i} cx={bx} cy={by} r="2.5" fill="rgba(180,230,255,0.85)" />;
-    })}
-    <circle cx="26" cy="26" r="4" fill="rgba(220,245,255,0.95)" />
-  </svg>
-);
-
-const HighDustIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <path d="M6 38 Q14 28 22 34 Q30 40 38 28 Q44 20 48 24" stroke="rgba(210,160,60,0.7)" strokeWidth="3" strokeLinecap="round" fill="none" />
-    <path d="M4 30 Q12 22 20 28 Q28 34 36 22 Q42 14 48 18" stroke="rgba(210,160,60,0.5)" strokeWidth="2" strokeLinecap="round" fill="none" />
-    {[10,18,28,36,42].map((cx, i) => (
-      <circle key={i} cx={cx} cy={12 + (i % 3) * 6} r={2 + (i % 2)} fill="rgba(210,160,60,0.5)" />
-    ))}
-    {[14,24,34,44].map((cx, i) => (
-      <circle key={i} cx={cx} cy={42 + (i % 2) * 4} r={1.5 + (i % 2)} fill="rgba(210,160,60,0.4)" />
-    ))}
-  </svg>
-);
-
-const EquipmentMaintenanceIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <circle cx="26" cy="26" r="12" stroke="rgba(140,180,255,0.8)" strokeWidth="2.5" fill="none" />
-    <circle cx="26" cy="26" r="6" stroke="rgba(140,180,255,0.8)" strokeWidth="2" fill="none" />
-    {[0,45,90,135,180,225,270,315].map((a, i) => {
-      const r = (a * Math.PI) / 180;
-      const x1 = 26 + 12 * Math.cos(r); const y1 = 26 + 12 * Math.sin(r);
-      const x2 = 26 + 19 * Math.cos(r); const y2 = 26 + 19 * Math.sin(r);
-      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(140,180,255,0.7)" strokeWidth="2.5" strokeLinecap="round" />;
-    })}
-    <path d="M32 10 Q36 8 38 12 L28 22 L24 18 Z" fill="rgba(200,220,255,0.8)" />
-    <rect x="22" y="16" width="8" height="3" rx="1" transform="rotate(-45 26 17.5)" fill="rgba(140,180,255,0.9)" />
-  </svg>
-);
-
-const MaintenanceIllustration = () => (
-  <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-    <path d="M14 38 L32 20" stroke="rgba(180,200,230,0.85)" strokeWidth="4" strokeLinecap="round" />
-    <path d="M30 14 Q36 10 40 14 L36 18 Q40 22 36 26 Q30 28 26 24 L14 36 Q10 36 10 32 L22 20 Q18 16 22 12 Q26 8 30 14Z" fill="rgba(180,200,230,0.75)" />
-    <circle cx="38" cy="38" r="6" stroke="rgba(180,200,230,0.7)" strokeWidth="2.5" fill="none" />
-    <line x1="38" y1="32" x2="38" y2="34" stroke="rgba(180,200,230,0.7)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="38" y1="42" x2="38" y2="44" stroke="rgba(180,200,230,0.7)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="32" y1="38" x2="34" y2="38" stroke="rgba(180,200,230,0.7)" strokeWidth="2" strokeLinecap="round" />
-    <line x1="42" y1="38" x2="44" y2="38" stroke="rgba(180,200,230,0.7)" strokeWidth="2" strokeLinecap="round" />
-  </svg>
-);
-
 const SITE_CARDS: SiteCondCard[] = [
-  { value: "normal",       label: "Normal",                        gradient: "linear-gradient(135deg, #1B3A2F 0%, #2D6A4F 100%)",   illustration: <NormalIllustration /> },
-  { value: "wet-surfaces", label: "Wet Surface",                   gradient: "linear-gradient(135deg, #0D2B4A 0%, #1A4A7A 100%)",   illustration: <WetSurfaceIllustration /> },
-  { value: "muddy",        label: "Muddy",                         gradient: "linear-gradient(135deg, #2E1A0A 0%, #6B3A1A 100%)",   illustration: <MuddyIllustration /> },
-  { value: "icy",          label: "Icy",                           gradient: "linear-gradient(135deg, #0D2340 0%, #1A4060 100%)",   illustration: <IcyIllustration /> },
-  { value: "high-dust",    label: "High Dust",                     gradient: "linear-gradient(135deg, #3A2000 0%, #7A4A00 100%)",   illustration: <HighDustIllustration /> },
-  { value: "scaffolding",  label: "Equipment Maintenance Ongoing", gradient: "linear-gradient(135deg, #0E1E3A 0%, #1A3060 100%)",   illustration: <EquipmentMaintenanceIllustration /> },
-  { value: "maintenance",  label: "Maintenance",                   gradient: "linear-gradient(135deg, #111827 0%, #1F2E44 100%)",   illustration: <MaintenanceIllustration /> },
+  { value: "normal",            label: "Normal",                        gradient: "linear-gradient(135deg, #1B3A2F 0%, #2D6A4F 100%)",   image: "/assets/site-conditions/normal.png" },
+  { value: "wet-surfaces",      label: "Wet Surface",                   gradient: "linear-gradient(135deg, #0D2B4A 0%, #1A4A7A 100%)",   image: "/assets/site-conditions/wet-surfaces.png" },
+  { value: "muddy",             label: "Muddy",                         gradient: "linear-gradient(135deg, #2E1A0A 0%, #6B3A1A 100%)",   image: "/assets/site-conditions/muddy.png" },
+  { value: "icy",               label: "Icy",                           gradient: "linear-gradient(135deg, #0D2340 0%, #1A4060 100%)",   image: "https://images.unsplash.com/photo-1562237548-2e0fd9797537?q=80&w=800&auto=format&fit=crop" },
+  { value: "high-dust",         label: "High Dust",                     gradient: "linear-gradient(135deg, #3A2000 0%, #7A4A00 100%)",   image: "https://images.unsplash.com/photo-1773097258874-17d6446c3113?q=80&w=800&auto=format&fit=crop" },
+  { value: "scaffolding",       label: "Equipment Maintenance Ongoing", gradient: "linear-gradient(135deg, #0E1E3A 0%, #1A3060 100%)",   image: "https://images.unsplash.com/photo-1563118351-2d4040fe5980?q=80&w=800&auto=format&fit=crop" },
+  { value: "restricted-access", label: "Restricted Access Zone Active", gradient: "linear-gradient(135deg, #111827 0%, #1F2E44 100%)",   image: "https://images.unsplash.com/photo-1773517459319-ae1dd572c974?q=80&w=800&auto=format&fit=crop" },
 ];
 
 export function WeatherSetupScreen() {
@@ -489,14 +399,14 @@ export function WeatherSetupScreen() {
 
   // ── Field label style ──────────────────────────────────────────────────────
   const fieldLabel: React.CSSProperties = {
-    color: "var(--text-tertiary)",
-    fontSize: 12,
+    color: "var(--color-text-secondary)",
+    fontSize: 14,
     fontWeight: 600,
     letterSpacing: "1px",
     textTransform: "uppercase",
     fontFamily: "Inter, sans-serif",
     display: "block",
-    marginBottom: 8,
+    marginBottom: 6,
   };
 
   const divider = (
@@ -647,7 +557,7 @@ export function WeatherSetupScreen() {
                       style={{
                         display: "flex",
                         flexDirection: "column",
-                        height: 110,
+                        height: 135,
                         backgroundColor: "var(--bg-card)",
                         border: isActive
                           ? "2px solid var(--color-brand)"
@@ -661,14 +571,32 @@ export function WeatherSetupScreen() {
                       {/* Illustration area */}
                       <div
                         style={{
-                          flex: 1,
-                          background: card.gradient,
+                          height: 100,
+                          position: "relative",
+                          overflow: "hidden",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        {card.illustration}
+                        <img
+                          src={card.image}
+                          alt={card.label}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            transition: "transform 0.3s ease",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            background: isActive ? "transparent" : "rgba(0,0,0,0.1)",
+                            transition: "background 0.2s",
+                          }}
+                        />
                       </div>
                       {/* Label */}
                       <div

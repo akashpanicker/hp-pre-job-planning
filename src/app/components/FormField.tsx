@@ -5,7 +5,7 @@ export const FORM_COLORS = {
   label: "var(--color-text-secondary)",
   placeholder: "var(--color-text-tertiary)",
   text: "var(--color-text-primary)",
-  inputBg: "var(--color-surface-1)",
+  inputBg: "var(--color-surface-2)",
   border: "var(--color-surface-5)",
   cardBg: "var(--color-surface-3)",
   sectionHeading: "var(--color-text-primary)",

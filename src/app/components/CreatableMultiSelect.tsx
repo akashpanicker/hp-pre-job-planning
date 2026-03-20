@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Check, Plus } from "lucide-react";
+import { X, Check, Plus, Search, ChevronDown } from "lucide-react";
 
 interface CreatableMultiSelectProps {
   label: string;
@@ -139,61 +139,63 @@ export function CreatableMultiSelect({
 
   return (
     <div ref={wrapperRef} style={{ position: "relative" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 6,
-        }}
-      >
-        <label
+      {(label || (showToggle && onToggleChange)) && (
+        <div
           style={{
-            color: "var(--color-text-secondary)",
-            fontSize: 14,
-            fontWeight: 500,
-            letterSpacing: "1px",
-            textTransform: "uppercase",
-            fontFamily: "Inter, sans-serif",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 6,
           }}
         >
-          {label}
-        </label>
-
-        {/* Toggle switch */}
-        {showToggle && onToggleChange && (
-          <button
-            type="button"
-            onClick={() => onToggleChange(!toggleValue)}
-            style={{
-              width: 40,
-              height: 20,
-              backgroundColor: toggleValue
-                ? "var(--color-brand)"
-                : "var(--color-surface-5)",
-              borderRadius: 10,
-              border: "none",
-              padding: 2,
-              cursor: "pointer",
-              position: "relative",
-              transition: "background-color 0.2s",
-            }}
-          >
-            <div
+          {label && (
+            <label
               style={{
-                width: 16,
-                height: 16,
-                backgroundColor: "var(--color-text-primary)",
-                borderRadius: "50%",
-                transform: toggleValue
-                  ? "translateX(20px)"
-                  : "translateX(0)",
-                transition: "transform 0.2s",
+                color: "var(--color-text-secondary)",
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                fontFamily: "Inter, sans-serif",
               }}
-            />
-          </button>
-        )}
-      </div>
+            >
+              {label}
+            </label>
+          )}
+
+          {/* Toggle switch */}
+          {showToggle && onToggleChange && (
+            <button
+              type="button"
+              onClick={() => onToggleChange(!toggleValue)}
+              style={{
+                width: 40,
+                height: 20,
+                backgroundColor: toggleValue
+                  ? "var(--color-brand)"
+                  : "var(--color-surface-5)",
+                borderRadius: 10,
+                border: "none",
+                padding: 2,
+                cursor: "pointer",
+                position: "relative",
+                transition: "background-color 0.2s",
+              }}
+            >
+              <div
+                style={{
+                  width: 16,
+                  height: 16,
+                  backgroundColor: "var(--color-toggle-thumb)",
+                  borderRadius: "50%",
+                  transform: toggleValue ? "translateX(20px)" : "translateX(0)",
+                  transition: "transform 0.2s",
+                }}
+              />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Single input container - only show if toggle is on or no toggle exists */}
       {(!showToggle || toggleValue) && (
@@ -201,14 +203,14 @@ export function CreatableMultiSelect({
           <div
             onClick={() => inputRef.current?.focus()}
             style={{
-              backgroundColor: "var(--color-surface-1)",
-              border: `1px solid ${isFocused ? "var(--color-brand)" : "var(--color-surface-4)"}`,
+              backgroundColor: "var(--color-surface-2)",
+              border: `1px solid ${isFocused ? "var(--color-brand)" : "var(--color-surface-5)"}`,
               borderRadius: 6,
               minHeight: 40,
-              padding: "6px 10px",
+              padding: "6px 12px",
               display: "flex",
               flexWrap: "wrap",
-              gap: 6,
+              gap: 8,
               alignItems: "center",
               cursor: "text",
               boxShadow: isFocused
@@ -216,6 +218,7 @@ export function CreatableMultiSelect({
                 : "none",
             }}
           >
+            <Search size={18} style={{ color: "var(--color-text-tertiary)", marginRight: 2 }} />
             {/* Selected chips */}
             {values.map((value) => (
               <div
@@ -323,6 +326,16 @@ export function CreatableMultiSelect({
                 <Plus size={16} style={{ color: "var(--color-success)" }} />
               </button>
             )}
+
+            <ChevronDown
+              size={18}
+              style={{
+                color: "var(--color-text-tertiary)",
+                transition: "transform 0.2s",
+                transform: isFocused ? "rotate(180deg)" : "rotate(0deg)",
+                marginLeft: "auto",
+              }}
+            />
           </div>
 
           {/* Dropdown panel */}

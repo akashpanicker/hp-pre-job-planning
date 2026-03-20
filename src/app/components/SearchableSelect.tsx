@@ -60,26 +60,28 @@ export function SearchableSelect({
 
   return (
     <div ref={containerRef} style={{ position: "relative" }}>
-      <label
-        style={{
-          color: "var(--color-text-secondary)",
-          fontSize: 14,
-          fontWeight: 500,
-          letterSpacing: "1px",
-          textTransform: "uppercase",
-          fontFamily: "Inter, sans-serif",
-          display: "block",
-          paddingBottom: 6,
-        }}
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          style={{
+            color: "var(--color-text-secondary)",
+            fontSize: 14,
+            fontWeight: 600,
+            letterSpacing: "1px",
+            textTransform: "uppercase",
+            fontFamily: "Inter, sans-serif",
+            display: "block",
+            paddingBottom: 6,
+          }}
+        >
+          {label}
+        </label>
+      )}
 
       <div
         onClick={() => setIsOpen(!isOpen)}
         style={{
           position: "relative",
-          backgroundColor: "var(--color-surface-1)",
+          backgroundColor: "var(--color-surface-2)",
           border: `1px solid ${isOpen ? "var(--color-brand)" : "var(--color-surface-5)"}`,
           borderRadius: 4,
           height: 40,
@@ -156,7 +158,7 @@ export function SearchableSelect({
             left: 0,
             right: 0,
             marginTop: 4,
-            backgroundColor: "var(--color-surface-1)",
+            backgroundColor: "var(--color-surface-2)",
             border: `1px solid var(--color-surface-5)`,
             borderRadius: 4,
             maxHeight: 240,
